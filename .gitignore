@@ -11,5 +11,6 @@ frontend/node_modules/
 .env
 .env.*
 
-# Local temp
+# Local temp / extracted copyrighted reference text
 .tmp/
+book_extract/
