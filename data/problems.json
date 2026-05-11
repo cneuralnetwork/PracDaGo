@@ -2,35 +2,68 @@
   "chapters": [
     {
       "id": "ch1",
-      "title": "Tutorial"
+      "title": "Tutorial: The Shape of Go Programs",
+      "description": "Start with tiny complete programs: input, transformation, output."
     },
     {
       "id": "ch2",
-      "title": "Program Structure"
+      "title": "Program Structure",
+      "description": "Names, declarations, scope, packages, and zero values."
     },
     {
       "id": "ch3",
-      "title": "Basic Data Types"
+      "title": "Basic Data Types",
+      "description": "Booleans, numbers, strings, constants, bytes, and runes."
     },
     {
       "id": "ch4",
-      "title": "Composite Types"
+      "title": "Composite Types",
+      "description": "Arrays, slices, maps, structs, and JSON-shaped data."
     },
     {
       "id": "ch5",
-      "title": "Functions"
+      "title": "Functions",
+      "description": "Function design, errors, recursion, closures, panic/recover, and defer."
     },
     {
       "id": "ch6",
-      "title": "Methods"
+      "title": "Methods",
+      "description": "Receivers, method sets, encapsulation-by-convention, and reusable data behavior."
     },
     {
       "id": "ch7",
-      "title": "Interfaces"
+      "title": "Interfaces",
+      "description": "Small behavior contracts, sorting, readers/writers, type assertions, and polymorphism."
     },
     {
       "id": "ch8",
-      "title": "Goroutines and Channels"
+      "title": "Goroutines and Channels",
+      "description": "Goroutines, channels, pipelines, cancellation, fan-in/fan-out."
+    },
+    {
+      "id": "ch9",
+      "title": "Shared Variables and Mutexes",
+      "description": "Race-free shared state, mutexes, once-only init, and confinement."
+    },
+    {
+      "id": "ch10",
+      "title": "Packages and the Go Tool",
+      "description": "Package design, imports, internal APIs, modules, and build/test workflows."
+    },
+    {
+      "id": "ch11",
+      "title": "Testing",
+      "description": "Table tests, benchmarks, examples, coverage thinking, and testable design."
+    },
+    {
+      "id": "ch12",
+      "title": "Reflection",
+      "description": "Inspecting dynamic values, tags, generic encoders, and reflect pitfalls."
+    },
+    {
+      "id": "ch13",
+      "title": "Low-Level Programming",
+      "description": "Unsafe, memory layout, alignment, byte views, and when not to be clever."
     }
   ],
   "problems": [
@@ -45,11 +78,11 @@
         "basics"
       ],
       "statement": "Return the exact greeting string for a supplied name.",
-      "explanation": "This problem practices strings, basics in the spirit of the Go book chapter. Focus on small, idiomatic Go: clear types, simple loops, and explicit error-free control flow. The intended solution avoids cleverness and shows how Go programs compose primitives into readable code.",
+      "explanation": "Intuition first: this problem is asking you to model one tiny transformation. The input is not mysterious; it is just data waiting to be reshaped into the return value.\n\nA good Go solution here avoids hiding the important state. If you need a running answer, name it something like total, out, seen, or best. If you need to remember membership, use a map. If you need to preserve order, keep a slice. If you need to inspect text, decide whether byte-level or rune-level processing is correct.\n\nThe reference solution is short because the data structure does most of the work. Read it from top to bottom and track exactly how the state changes for the first example. That trace is the real explanation.\n\nWhy this is idiomatic Go: concrete types, explicit control flow, useful zero values, and small helper logic. If your solution has more ceremony than the problem statement, simplify it.",
       "hints": [
-        "Start with the simplest data representation.",
-        "Prefer explicit loops and small helper functions.",
-        "Think about zero values and empty inputs."
+        "Say the function signature in English before coding.",
+        "Write the zero/empty case first.",
+        "Trace the first sample manually and make your variables follow that trace."
       ],
       "starterCode": "func Solve(name string) string {\n    // TODO\n    return \"\"\n}",
       "solutionCode": "package main\nfunc Solve(name string) string { return \"Hello, \"+name+\"!\" }",
@@ -64,13 +97,13 @@
         }
       ],
       "testCode": "func main(){ assertEqual(Solve(\"Ada\"), \"Hello, Ada!\"); assertEqual(Solve(\"Go\"), \"Hello, Go!\") }",
-      "lessonTitle": "Go as a small-program language",
-      "lesson": "Go rewards direct programs: declare data, loop over it, print or return a result. In early Go practice, focus less on clever abstractions and more on knowing exactly where values flow. A Go program starts at package main and func main, but problem solving usually means writing one small function that can be tested repeatedly.\n\nStudy goal: understand the idea before touching the editor. For this problem, identify the input type, the output type, and the one transformation between them. Then write a tiny Go function that expresses that transformation directly.\n\nKey Go habit: Read the input shape, choose the plainest type, write a loop, and handle the empty case first. If you can explain every line aloud, you are writing Go correctly.",
-      "approach": "Approach: solve Hello, Gopher by choosing the simplest representation for strings, basics. Start with the zero/empty input. Then add the main loop or helper. Keep the function deterministic: same input, same output, no hidden global state.",
+      "lessonTitle": "Why this matters: Hello, Gopher",
+      "lesson": "This exercise belongs to Tutorial: The Shape of Go Programs.\n\nThe big idea: Start with tiny complete programs: input, transformation, output.\n\nDo not treat this like random syntax practice. Treat it like learning a mental move. Every Go problem has three visible things: the data coming in, the state you keep while working, and the data going out. If you can name those three, the code usually becomes short.\n\nFor this problem, stare at the function signature first. The parameter types tell you what world you are living in. A []int means order matters. A map means lookup/counting matters. A string means you must ask: bytes or runes? A struct means fields have meaning.\n\nYour study goal: solve it once slowly and clearly. Then solve it again with fewer moving parts. Idiomatic Go usually feels calm: small variables, explicit loops, boring names, and no magic.",
+      "approach": "Attack plan for Hello, Gopher:\n\n1. Identify the zero/empty case before writing the main logic.\n2. Choose the smallest useful state variable. Do not create a framework for a 10-line function.\n3. Walk through one sample by hand and make your variable changes match that story.\n4. Only after it works, ask if the code reads like plain English.\n\nFor this specific task, the core move is: Return the exact greeting string for a supplied name. Keep the implementation direct; the judge rewards correctness and clarity, not cleverness.",
       "pitfalls": [
-        "Forgetting Go zero values can either help or hurt depending on the type.",
-        "Overengineering with extra structs/interfaces before the simple function works.",
-        "Not testing empty, one-element, and repeated-value cases."
+        "Starting with code before understanding the input/output shape.",
+        "Using a clever abstraction where a plain loop or map would be clearer.",
+        "Skipping edge cases: empty input, one item, duplicates, negative numbers, or Unicode depending on the problem."
       ]
     },
     {
@@ -84,11 +117,11 @@
         "arithmetic"
       ],
       "statement": "Convert a list of Fahrenheit temperatures to Celsius, rounded toward zero.",
-      "explanation": "This problem practices loops, arithmetic in the spirit of the Go book chapter. Focus on small, idiomatic Go: clear types, simple loops, and explicit error-free control flow. The intended solution avoids cleverness and shows how Go programs compose primitives into readable code.",
+      "explanation": "Intuition first: this problem is asking you to model one tiny transformation. The input is not mysterious; it is just data waiting to be reshaped into the return value.\n\nA good Go solution here avoids hiding the important state. If you need a running answer, name it something like total, out, seen, or best. If you need to remember membership, use a map. If you need to preserve order, keep a slice. If you need to inspect text, decide whether byte-level or rune-level processing is correct.\n\nThe reference solution is short because the data structure does most of the work. Read it from top to bottom and track exactly how the state changes for the first example. That trace is the real explanation.\n\nWhy this is idiomatic Go: concrete types, explicit control flow, useful zero values, and small helper logic. If your solution has more ceremony than the problem statement, simplify it.",
       "hints": [
-        "Start with the simplest data representation.",
-        "Prefer explicit loops and small helper functions.",
-        "Think about zero values and empty inputs."
+        "Say the function signature in English before coding.",
+        "Write the zero/empty case first.",
+        "Trace the first sample manually and make your variables follow that trace."
       ],
       "starterCode": "func Solve(f []int) []int {\n    return nil\n}",
       "solutionCode": "package main\nfunc Solve(f []int) []int { out:=make([]int,len(f)); for i,x:=range f { out[i]=(x-32)*5/9 }; return out }",
@@ -99,13 +132,13 @@
         }
       ],
       "testCode": "func main(){ assertEqual(Solve([]int{32,212,50}), []int{0,100,10}); assertEqual(Solve([]int{-40}), []int{-40}) }",
-      "lessonTitle": "Go as a small-program language",
-      "lesson": "Go rewards direct programs: declare data, loop over it, print or return a result. In early Go practice, focus less on clever abstractions and more on knowing exactly where values flow. A Go program starts at package main and func main, but problem solving usually means writing one small function that can be tested repeatedly.\n\nStudy goal: understand the idea before touching the editor. For this problem, identify the input type, the output type, and the one transformation between them. Then write a tiny Go function that expresses that transformation directly.\n\nKey Go habit: Read the input shape, choose the plainest type, write a loop, and handle the empty case first. If you can explain every line aloud, you are writing Go correctly.",
-      "approach": "Approach: solve Temperature Table by choosing the simplest representation for loops, arithmetic. Start with the zero/empty input. Then add the main loop or helper. Keep the function deterministic: same input, same output, no hidden global state.",
+      "lessonTitle": "Why this matters: Temperature Table",
+      "lesson": "This exercise belongs to Tutorial: The Shape of Go Programs.\n\nThe big idea: Start with tiny complete programs: input, transformation, output.\n\nDo not treat this like random syntax practice. Treat it like learning a mental move. Every Go problem has three visible things: the data coming in, the state you keep while working, and the data going out. If you can name those three, the code usually becomes short.\n\nFor this problem, stare at the function signature first. The parameter types tell you what world you are living in. A []int means order matters. A map means lookup/counting matters. A string means you must ask: bytes or runes? A struct means fields have meaning.\n\nYour study goal: solve it once slowly and clearly. Then solve it again with fewer moving parts. Idiomatic Go usually feels calm: small variables, explicit loops, boring names, and no magic.",
+      "approach": "Attack plan for Temperature Table:\n\n1. Identify the zero/empty case before writing the main logic.\n2. Choose the smallest useful state variable. Do not create a framework for a 10-line function.\n3. Walk through one sample by hand and make your variable changes match that story.\n4. Only after it works, ask if the code reads like plain English.\n\nFor this specific task, the core move is: Convert a list of Fahrenheit temperatures to Celsius, rounded toward zero. Keep the implementation direct; the judge rewards correctness and clarity, not cleverness.",
       "pitfalls": [
-        "Forgetting Go zero values can either help or hurt depending on the type.",
-        "Overengineering with extra structs/interfaces before the simple function works.",
-        "Not testing empty, one-element, and repeated-value cases."
+        "Starting with code before understanding the input/output shape.",
+        "Using a clever abstraction where a plain loop or map would be clearer.",
+        "Skipping edge cases: empty input, one item, duplicates, negative numbers, or Unicode depending on the problem."
       ]
     },
     {
@@ -119,11 +152,11 @@
         "slices"
       ],
       "statement": "Given lines of text, return the first occurrence of each line preserving order.",
-      "explanation": "This problem practices maps, slices in the spirit of the Go book chapter. Focus on small, idiomatic Go: clear types, simple loops, and explicit error-free control flow. The intended solution avoids cleverness and shows how Go programs compose primitives into readable code.",
+      "explanation": "Intuition first: this problem is asking you to model one tiny transformation. The input is not mysterious; it is just data waiting to be reshaped into the return value.\n\nA good Go solution here avoids hiding the important state. If you need a running answer, name it something like total, out, seen, or best. If you need to remember membership, use a map. If you need to preserve order, keep a slice. If you need to inspect text, decide whether byte-level or rune-level processing is correct.\n\nThe reference solution is short because the data structure does most of the work. Read it from top to bottom and track exactly how the state changes for the first example. That trace is the real explanation.\n\nWhy this is idiomatic Go: concrete types, explicit control flow, useful zero values, and small helper logic. If your solution has more ceremony than the problem statement, simplify it.",
       "hints": [
-        "Start with the simplest data representation.",
-        "Prefer explicit loops and small helper functions.",
-        "Think about zero values and empty inputs."
+        "Say the function signature in English before coding.",
+        "Write the zero/empty case first.",
+        "Trace the first sample manually and make your variables follow that trace."
       ],
       "starterCode": "func Solve(lines []string) []string {\n    return nil\n}",
       "solutionCode": "package main\nfunc Solve(lines []string) []string { seen:=map[string]bool{}; out:=[]string{}; for _,s:=range lines { if !seen[s] {seen[s]=true; out=append(out,s)} }; return out }",
@@ -134,13 +167,13 @@
         }
       ],
       "testCode": "func main(){ assertEqual(Solve([]string{\"a\",\"b\",\"a\"}), []string{\"a\",\"b\"}); assertEqual(Solve([]string{}), []string{}) }",
-      "lessonTitle": "Go as a small-program language",
-      "lesson": "Go rewards direct programs: declare data, loop over it, print or return a result. In early Go practice, focus less on clever abstractions and more on knowing exactly where values flow. A Go program starts at package main and func main, but problem solving usually means writing one small function that can be tested repeatedly.\n\nStudy goal: understand the idea before touching the editor. For this problem, identify the input type, the output type, and the one transformation between them. Then write a tiny Go function that expresses that transformation directly.\n\nKey Go habit: Read the input shape, choose the plainest type, write a loop, and handle the empty case first. If you can explain every line aloud, you are writing Go correctly.",
-      "approach": "Approach: solve Unique Lines by choosing the simplest representation for maps, slices. Start with the zero/empty input. Then add the main loop or helper. Keep the function deterministic: same input, same output, no hidden global state.",
+      "lessonTitle": "Why this matters: Unique Lines",
+      "lesson": "This exercise belongs to Tutorial: The Shape of Go Programs.\n\nThe big idea: Start with tiny complete programs: input, transformation, output.\n\nDo not treat this like random syntax practice. Treat it like learning a mental move. Every Go problem has three visible things: the data coming in, the state you keep while working, and the data going out. If you can name those three, the code usually becomes short.\n\nFor this problem, stare at the function signature first. The parameter types tell you what world you are living in. A []int means order matters. A map means lookup/counting matters. A string means you must ask: bytes or runes? A struct means fields have meaning.\n\nYour study goal: solve it once slowly and clearly. Then solve it again with fewer moving parts. Idiomatic Go usually feels calm: small variables, explicit loops, boring names, and no magic.",
+      "approach": "Attack plan for Unique Lines:\n\n1. Identify the zero/empty case before writing the main logic.\n2. Choose the smallest useful state variable. Do not create a framework for a 10-line function.\n3. Walk through one sample by hand and make your variable changes match that story.\n4. Only after it works, ask if the code reads like plain English.\n\nFor this specific task, the core move is: Given lines of text, return the first occurrence of each line preserving order. Keep the implementation direct; the judge rewards correctness and clarity, not cleverness.",
       "pitfalls": [
-        "Forgetting Go zero values can either help or hurt depending on the type.",
-        "Overengineering with extra structs/interfaces before the simple function works.",
-        "Not testing empty, one-element, and repeated-value cases."
+        "Starting with code before understanding the input/output shape.",
+        "Using a clever abstraction where a plain loop or map would be clearer.",
+        "Skipping edge cases: empty input, one item, duplicates, negative numbers, or Unicode depending on the problem."
       ]
     },
     {
@@ -154,11 +187,11 @@
         "functions"
       ],
       "statement": "Count the number of set bits in an unsigned 8-bit integer.",
-      "explanation": "This problem practices bits, functions in the spirit of the Go book chapter. Focus on small, idiomatic Go: clear types, simple loops, and explicit error-free control flow. The intended solution avoids cleverness and shows how Go programs compose primitives into readable code.",
+      "explanation": "Intuition first: this problem is asking you to model one tiny transformation. The input is not mysterious; it is just data waiting to be reshaped into the return value.\n\nA good Go solution here avoids hiding the important state. If you need a running answer, name it something like total, out, seen, or best. If you need to remember membership, use a map. If you need to preserve order, keep a slice. If you need to inspect text, decide whether byte-level or rune-level processing is correct.\n\nThe reference solution is short because the data structure does most of the work. Read it from top to bottom and track exactly how the state changes for the first example. That trace is the real explanation.\n\nWhy this is idiomatic Go: concrete types, explicit control flow, useful zero values, and small helper logic. If your solution has more ceremony than the problem statement, simplify it.",
       "hints": [
-        "Start with the simplest data representation.",
-        "Prefer explicit loops and small helper functions.",
-        "Think about zero values and empty inputs."
+        "Say the function signature in English before coding.",
+        "Write the zero/empty case first.",
+        "Trace the first sample manually and make your variables follow that trace."
       ],
       "starterCode": "func Solve(x uint8) int {\n    return 0\n}",
       "solutionCode": "package main\nfunc Solve(x uint8) int { c:=0; for x>0 { c+=int(x&1); x >>= 1 }; return c }",
@@ -169,13 +202,13 @@
         }
       ],
       "testCode": "func main(){ assertEqual(Solve(uint8(13)), 3); assertEqual(Solve(uint8(255)), 8); assertEqual(Solve(uint8(0)), 0) }",
-      "lessonTitle": "Names, declarations, and scope",
-      "lesson": "Go programs are built from declarations. A name exists only in its scope, and short declarations with := are convenient but can accidentally create a new local variable instead of updating an outer one. Learning scope early prevents many confusing bugs.\n\nStudy goal: understand the idea before touching the editor. For this problem, identify the input type, the output type, and the one transformation between them. Then write a tiny Go function that expresses that transformation directly.\n\nKey Go habit: Prefer explicit variable names. Use := for first declarations and = for updates. Keep variables close to where they are used.",
-      "approach": "Approach: solve Byte Popcount by choosing the simplest representation for bits, functions. Start with the zero/empty input. Then add the main loop or helper. Keep the function deterministic: same input, same output, no hidden global state.",
+      "lessonTitle": "Why this matters: Byte Popcount",
+      "lesson": "This exercise belongs to Program Structure.\n\nThe big idea: Names, declarations, scope, packages, and zero values.\n\nDo not treat this like random syntax practice. Treat it like learning a mental move. Every Go problem has three visible things: the data coming in, the state you keep while working, and the data going out. If you can name those three, the code usually becomes short.\n\nFor this problem, stare at the function signature first. The parameter types tell you what world you are living in. A []int means order matters. A map means lookup/counting matters. A string means you must ask: bytes or runes? A struct means fields have meaning.\n\nYour study goal: solve it once slowly and clearly. Then solve it again with fewer moving parts. Idiomatic Go usually feels calm: small variables, explicit loops, boring names, and no magic.",
+      "approach": "Attack plan for Byte Popcount:\n\n1. Identify the zero/empty case before writing the main logic.\n2. Choose the smallest useful state variable. Do not create a framework for a 10-line function.\n3. Walk through one sample by hand and make your variable changes match that story.\n4. Only after it works, ask if the code reads like plain English.\n\nFor this specific task, the core move is: Count the number of set bits in an unsigned 8-bit integer. Keep the implementation direct; the judge rewards correctness and clarity, not cleverness.",
       "pitfalls": [
-        "Forgetting Go zero values can either help or hurt depending on the type.",
-        "Overengineering with extra structs/interfaces before the simple function works.",
-        "Not testing empty, one-element, and repeated-value cases."
+        "Starting with code before understanding the input/output shape.",
+        "Using a clever abstraction where a plain loop or map would be clearer.",
+        "Skipping edge cases: empty input, one item, duplicates, negative numbers, or Unicode depending on the problem."
       ]
     },
     {
@@ -188,11 +221,11 @@
         "control-flow"
       ],
       "statement": "Simulate block-scoped updates: for each number add it to sum; if it is even, add it again as a temporary bonus.",
-      "explanation": "This problem practices control-flow in the spirit of the Go book chapter. Focus on small, idiomatic Go: clear types, simple loops, and explicit error-free control flow. The intended solution avoids cleverness and shows how Go programs compose primitives into readable code.",
+      "explanation": "Intuition first: this problem is asking you to model one tiny transformation. The input is not mysterious; it is just data waiting to be reshaped into the return value.\n\nA good Go solution here avoids hiding the important state. If you need a running answer, name it something like total, out, seen, or best. If you need to remember membership, use a map. If you need to preserve order, keep a slice. If you need to inspect text, decide whether byte-level or rune-level processing is correct.\n\nThe reference solution is short because the data structure does most of the work. Read it from top to bottom and track exactly how the state changes for the first example. That trace is the real explanation.\n\nWhy this is idiomatic Go: concrete types, explicit control flow, useful zero values, and small helper logic. If your solution has more ceremony than the problem statement, simplify it.",
       "hints": [
-        "Start with the simplest data representation.",
-        "Prefer explicit loops and small helper functions.",
-        "Think about zero values and empty inputs."
+        "Say the function signature in English before coding.",
+        "Write the zero/empty case first.",
+        "Trace the first sample manually and make your variables follow that trace."
       ],
       "starterCode": "func Solve(nums []int) int {\n    return 0\n}",
       "solutionCode": "package main\nfunc Solve(nums []int) int { sum:=0; for _,x:=range nums { sum+=x; if x%2==0 { y:=x; sum+=y } }; return sum }",
@@ -203,13 +236,13 @@
         }
       ],
       "testCode": "func main(){ assertEqual(Solve([]int{1,2,3,4}), 16); assertEqual(Solve([]int{-2,5}), 1) }",
-      "lessonTitle": "Names, declarations, and scope",
-      "lesson": "Go programs are built from declarations. A name exists only in its scope, and short declarations with := are convenient but can accidentally create a new local variable instead of updating an outer one. Learning scope early prevents many confusing bugs.\n\nStudy goal: understand the idea before touching the editor. For this problem, identify the input type, the output type, and the one transformation between them. Then write a tiny Go function that expresses that transformation directly.\n\nKey Go habit: Prefer explicit variable names. Use := for first declarations and = for updates. Keep variables close to where they are used.",
-      "approach": "Approach: solve Shadow Sum by choosing the simplest representation for control-flow. Start with the zero/empty input. Then add the main loop or helper. Keep the function deterministic: same input, same output, no hidden global state.",
+      "lessonTitle": "Why this matters: Shadow Sum",
+      "lesson": "This exercise belongs to Program Structure.\n\nThe big idea: Names, declarations, scope, packages, and zero values.\n\nDo not treat this like random syntax practice. Treat it like learning a mental move. Every Go problem has three visible things: the data coming in, the state you keep while working, and the data going out. If you can name those three, the code usually becomes short.\n\nFor this problem, stare at the function signature first. The parameter types tell you what world you are living in. A []int means order matters. A map means lookup/counting matters. A string means you must ask: bytes or runes? A struct means fields have meaning.\n\nYour study goal: solve it once slowly and clearly. Then solve it again with fewer moving parts. Idiomatic Go usually feels calm: small variables, explicit loops, boring names, and no magic.",
+      "approach": "Attack plan for Shadow Sum:\n\n1. Identify the zero/empty case before writing the main logic.\n2. Choose the smallest useful state variable. Do not create a framework for a 10-line function.\n3. Walk through one sample by hand and make your variable changes match that story.\n4. Only after it works, ask if the code reads like plain English.\n\nFor this specific task, the core move is: Simulate block-scoped updates: for each number add it to sum; if it is even, add it again as a temporary bonus. Keep the implementation direct; the judge rewards correctness and clarity, not cleverness.",
       "pitfalls": [
-        "Forgetting Go zero values can either help or hurt depending on the type.",
-        "Overengineering with extra structs/interfaces before the simple function works.",
-        "Not testing empty, one-element, and repeated-value cases."
+        "Starting with code before understanding the input/output shape.",
+        "Using a clever abstraction where a plain loop or map would be clearer.",
+        "Skipping edge cases: empty input, one item, duplicates, negative numbers, or Unicode depending on the problem."
       ]
     },
     {
@@ -222,11 +255,11 @@
         "strings"
       ],
       "statement": "Format a non-negative integer string with commas every three digits.",
-      "explanation": "This problem practices strings in the spirit of the Go book chapter. Focus on small, idiomatic Go: clear types, simple loops, and explicit error-free control flow. The intended solution avoids cleverness and shows how Go programs compose primitives into readable code.",
+      "explanation": "Intuition first: this problem is asking you to model one tiny transformation. The input is not mysterious; it is just data waiting to be reshaped into the return value.\n\nA good Go solution here avoids hiding the important state. If you need a running answer, name it something like total, out, seen, or best. If you need to remember membership, use a map. If you need to preserve order, keep a slice. If you need to inspect text, decide whether byte-level or rune-level processing is correct.\n\nThe reference solution is short because the data structure does most of the work. Read it from top to bottom and track exactly how the state changes for the first example. That trace is the real explanation.\n\nWhy this is idiomatic Go: concrete types, explicit control flow, useful zero values, and small helper logic. If your solution has more ceremony than the problem statement, simplify it.",
       "hints": [
-        "Start with the simplest data representation.",
-        "Prefer explicit loops and small helper functions.",
-        "Think about zero values and empty inputs."
+        "Say the function signature in English before coding.",
+        "Write the zero/empty case first.",
+        "Trace the first sample manually and make your variables follow that trace."
       ],
       "starterCode": "func Solve(s string) string {\n    return \"\"\n}",
       "solutionCode": "package main\nfunc Solve(s string) string { n:=len(s); if n<=3 {return s}; r:=n%3; out:=\"\"; if r>0 {out=s[:r]; if r<n {out+=\",\"}}; for i:=r;i<n;i+=3 { out+=s[i:i+3]; if i+3<n {out+=\",\"} }; return out }",
@@ -237,13 +270,13 @@
         }
       ],
       "testCode": "func main(){ assertEqual(Solve(\"1234567\"), \"1,234,567\"); assertEqual(Solve(\"12\"), \"12\"); assertEqual(Solve(\"123456\"), \"123,456\") }",
-      "lessonTitle": "Numbers, strings, bytes, and runes",
-      "lesson": "Strings in Go are immutable byte sequences, usually UTF-8 encoded. Indexing a string gives bytes, while ranging over a string gives runes. Numeric operations are explicit and integer division truncates toward zero.\n\nStudy goal: understand the idea before touching the editor. For this problem, identify the input type, the output type, and the one transformation between them. Then write a tiny Go function that expresses that transformation directly.\n\nKey Go habit: Ask: am I processing bytes, ASCII characters, or Unicode runes? That single question prevents most string bugs.",
-      "approach": "Approach: solve Comma Format by choosing the simplest representation for strings. Start with the zero/empty input. Then add the main loop or helper. Keep the function deterministic: same input, same output, no hidden global state.",
+      "lessonTitle": "Why this matters: Comma Format",
+      "lesson": "This exercise belongs to Basic Data Types.\n\nThe big idea: Booleans, numbers, strings, constants, bytes, and runes.\n\nDo not treat this like random syntax practice. Treat it like learning a mental move. Every Go problem has three visible things: the data coming in, the state you keep while working, and the data going out. If you can name those three, the code usually becomes short.\n\nFor this problem, stare at the function signature first. The parameter types tell you what world you are living in. A []int means order matters. A map means lookup/counting matters. A string means you must ask: bytes or runes? A struct means fields have meaning.\n\nYour study goal: solve it once slowly and clearly. Then solve it again with fewer moving parts. Idiomatic Go usually feels calm: small variables, explicit loops, boring names, and no magic.",
+      "approach": "Attack plan for Comma Format:\n\n1. Identify the zero/empty case before writing the main logic.\n2. Choose the smallest useful state variable. Do not create a framework for a 10-line function.\n3. Walk through one sample by hand and make your variable changes match that story.\n4. Only after it works, ask if the code reads like plain English.\n\nFor this specific task, the core move is: Format a non-negative integer string with commas every three digits. Keep the implementation direct; the judge rewards correctness and clarity, not cleverness.",
       "pitfalls": [
-        "Forgetting Go zero values can either help or hurt depending on the type.",
-        "Overengineering with extra structs/interfaces before the simple function works.",
-        "Not testing empty, one-element, and repeated-value cases."
+        "Starting with code before understanding the input/output shape.",
+        "Using a clever abstraction where a plain loop or map would be clearer.",
+        "Skipping edge cases: empty input, one item, duplicates, negative numbers, or Unicode depending on the problem."
       ]
     },
     {
@@ -257,11 +290,11 @@
         "maps"
       ],
       "statement": "Return true if two strings contain the same runes with the same multiplicities.",
-      "explanation": "This problem practices unicode, maps in the spirit of the Go book chapter. Focus on small, idiomatic Go: clear types, simple loops, and explicit error-free control flow. The intended solution avoids cleverness and shows how Go programs compose primitives into readable code.",
+      "explanation": "Intuition first: this problem is asking you to model one tiny transformation. The input is not mysterious; it is just data waiting to be reshaped into the return value.\n\nA good Go solution here avoids hiding the important state. If you need a running answer, name it something like total, out, seen, or best. If you need to remember membership, use a map. If you need to preserve order, keep a slice. If you need to inspect text, decide whether byte-level or rune-level processing is correct.\n\nThe reference solution is short because the data structure does most of the work. Read it from top to bottom and track exactly how the state changes for the first example. That trace is the real explanation.\n\nWhy this is idiomatic Go: concrete types, explicit control flow, useful zero values, and small helper logic. If your solution has more ceremony than the problem statement, simplify it.",
       "hints": [
-        "Start with the simplest data representation.",
-        "Prefer explicit loops and small helper functions.",
-        "Think about zero values and empty inputs."
+        "Say the function signature in English before coding.",
+        "Write the zero/empty case first.",
+        "Trace the first sample manually and make your variables follow that trace."
       ],
       "starterCode": "func Solve(a, b string) bool {\n    return false\n}",
       "solutionCode": "package main\nfunc Solve(a,b string) bool { m:=map[rune]int{}; for _,r:=range a {m[r]++}; for _,r:=range b {m[r]--}; for _,v:=range m { if v!=0 {return false} }; return true }",
@@ -272,13 +305,13 @@
         }
       ],
       "testCode": "func main(){ assertEqual(Solve(\"silent\",\"listen\"), true); assertEqual(Solve(\"go\",\"goo\"), false); assertEqual(Solve(\"\u591c\u732b\",\"\u732b\u591c\"), true) }",
-      "lessonTitle": "Numbers, strings, bytes, and runes",
-      "lesson": "Strings in Go are immutable byte sequences, usually UTF-8 encoded. Indexing a string gives bytes, while ranging over a string gives runes. Numeric operations are explicit and integer division truncates toward zero.\n\nStudy goal: understand the idea before touching the editor. For this problem, identify the input type, the output type, and the one transformation between them. Then write a tiny Go function that expresses that transformation directly.\n\nKey Go habit: Ask: am I processing bytes, ASCII characters, or Unicode runes? That single question prevents most string bugs.",
-      "approach": "Approach: solve Unicode Anagram by choosing the simplest representation for unicode, maps. Start with the zero/empty input. Then add the main loop or helper. Keep the function deterministic: same input, same output, no hidden global state.",
+      "lessonTitle": "Why this matters: Unicode Anagram",
+      "lesson": "This exercise belongs to Basic Data Types.\n\nThe big idea: Booleans, numbers, strings, constants, bytes, and runes.\n\nDo not treat this like random syntax practice. Treat it like learning a mental move. Every Go problem has three visible things: the data coming in, the state you keep while working, and the data going out. If you can name those three, the code usually becomes short.\n\nFor this problem, stare at the function signature first. The parameter types tell you what world you are living in. A []int means order matters. A map means lookup/counting matters. A string means you must ask: bytes or runes? A struct means fields have meaning.\n\nYour study goal: solve it once slowly and clearly. Then solve it again with fewer moving parts. Idiomatic Go usually feels calm: small variables, explicit loops, boring names, and no magic.",
+      "approach": "Attack plan for Unicode Anagram:\n\n1. Identify the zero/empty case before writing the main logic.\n2. Choose the smallest useful state variable. Do not create a framework for a 10-line function.\n3. Walk through one sample by hand and make your variable changes match that story.\n4. Only after it works, ask if the code reads like plain English.\n\nFor this specific task, the core move is: Return true if two strings contain the same runes with the same multiplicities. Keep the implementation direct; the judge rewards correctness and clarity, not cleverness.",
       "pitfalls": [
-        "Forgetting Go zero values can either help or hurt depending on the type.",
-        "Overengineering with extra structs/interfaces before the simple function works.",
-        "Not testing empty, one-element, and repeated-value cases."
+        "Starting with code before understanding the input/output shape.",
+        "Using a clever abstraction where a plain loop or map would be clearer.",
+        "Skipping edge cases: empty input, one item, duplicates, negative numbers, or Unicode depending on the problem."
       ]
     },
     {
@@ -291,11 +324,11 @@
         "slices"
       ],
       "statement": "Rotate a slice left by k positions and return a new slice.",
-      "explanation": "This problem practices slices in the spirit of the Go book chapter. Focus on small, idiomatic Go: clear types, simple loops, and explicit error-free control flow. The intended solution avoids cleverness and shows how Go programs compose primitives into readable code.",
+      "explanation": "Intuition first: this problem is asking you to model one tiny transformation. The input is not mysterious; it is just data waiting to be reshaped into the return value.\n\nA good Go solution here avoids hiding the important state. If you need a running answer, name it something like total, out, seen, or best. If you need to remember membership, use a map. If you need to preserve order, keep a slice. If you need to inspect text, decide whether byte-level or rune-level processing is correct.\n\nThe reference solution is short because the data structure does most of the work. Read it from top to bottom and track exactly how the state changes for the first example. That trace is the real explanation.\n\nWhy this is idiomatic Go: concrete types, explicit control flow, useful zero values, and small helper logic. If your solution has more ceremony than the problem statement, simplify it.",
       "hints": [
-        "Start with the simplest data representation.",
-        "Prefer explicit loops and small helper functions.",
-        "Think about zero values and empty inputs."
+        "Say the function signature in English before coding.",
+        "Write the zero/empty case first.",
+        "Trace the first sample manually and make your variables follow that trace."
       ],
       "starterCode": "func Solve(nums []int, k int) []int {\n    return nil\n}",
       "solutionCode": "package main\nfunc Solve(nums []int,k int) []int { n:=len(nums); if n==0 {return []int{}}; k%=n; out:=append([]int{}, nums[k:]...); out=append(out, nums[:k]...); return out }",
@@ -306,13 +339,13 @@
         }
       ],
       "testCode": "func main(){ assertEqual(Solve([]int{1,2,3,4},1), []int{2,3,4,1}); assertEqual(Solve([]int{1,2,3},3), []int{1,2,3}); assertEqual(Solve([]int{},2), []int{}) }",
-      "lessonTitle": "Slices, maps, structs, and JSON-shaped data",
-      "lesson": "Composite types let you model real data. Slices are views over arrays, maps are hash tables with useful zero values, and structs give names to fields. Most Go interview-style problems become simple once you pick the right composite type.\n\nStudy goal: understand the idea before touching the editor. For this problem, identify the input type, the output type, and the one transformation between them. Then write a tiny Go function that expresses that transformation directly.\n\nKey Go habit: Use slices for ordered sequences, maps for membership/counting, and structs when fields have meaning.",
-      "approach": "Approach: solve Rotate Slice by choosing the simplest representation for slices. Start with the zero/empty input. Then add the main loop or helper. Keep the function deterministic: same input, same output, no hidden global state.",
+      "lessonTitle": "Why this matters: Rotate Slice",
+      "lesson": "This exercise belongs to Composite Types.\n\nThe big idea: Arrays, slices, maps, structs, and JSON-shaped data.\n\nDo not treat this like random syntax practice. Treat it like learning a mental move. Every Go problem has three visible things: the data coming in, the state you keep while working, and the data going out. If you can name those three, the code usually becomes short.\n\nFor this problem, stare at the function signature first. The parameter types tell you what world you are living in. A []int means order matters. A map means lookup/counting matters. A string means you must ask: bytes or runes? A struct means fields have meaning.\n\nYour study goal: solve it once slowly and clearly. Then solve it again with fewer moving parts. Idiomatic Go usually feels calm: small variables, explicit loops, boring names, and no magic.",
+      "approach": "Attack plan for Rotate Slice:\n\n1. Identify the zero/empty case before writing the main logic.\n2. Choose the smallest useful state variable. Do not create a framework for a 10-line function.\n3. Walk through one sample by hand and make your variable changes match that story.\n4. Only after it works, ask if the code reads like plain English.\n\nFor this specific task, the core move is: Rotate a slice left by k positions and return a new slice. Keep the implementation direct; the judge rewards correctness and clarity, not cleverness.",
       "pitfalls": [
-        "Forgetting Go zero values can either help or hurt depending on the type.",
-        "Overengineering with extra structs/interfaces before the simple function works.",
-        "Not testing empty, one-element, and repeated-value cases."
+        "Starting with code before understanding the input/output shape.",
+        "Using a clever abstraction where a plain loop or map would be clearer.",
+        "Skipping edge cases: empty input, one item, duplicates, negative numbers, or Unicode depending on the problem."
       ]
     },
     {
@@ -326,11 +359,11 @@
         "strings"
       ],
       "statement": "Return the count for each word after lowercasing ASCII letters.",
-      "explanation": "This problem practices maps, strings in the spirit of the Go book chapter. Focus on small, idiomatic Go: clear types, simple loops, and explicit error-free control flow. The intended solution avoids cleverness and shows how Go programs compose primitives into readable code.",
+      "explanation": "Intuition first: this problem is asking you to model one tiny transformation. The input is not mysterious; it is just data waiting to be reshaped into the return value.\n\nA good Go solution here avoids hiding the important state. If you need a running answer, name it something like total, out, seen, or best. If you need to remember membership, use a map. If you need to preserve order, keep a slice. If you need to inspect text, decide whether byte-level or rune-level processing is correct.\n\nThe reference solution is short because the data structure does most of the work. Read it from top to bottom and track exactly how the state changes for the first example. That trace is the real explanation.\n\nWhy this is idiomatic Go: concrete types, explicit control flow, useful zero values, and small helper logic. If your solution has more ceremony than the problem statement, simplify it.",
       "hints": [
-        "Start with the simplest data representation.",
-        "Prefer explicit loops and small helper functions.",
-        "Think about zero values and empty inputs."
+        "Say the function signature in English before coding.",
+        "Write the zero/empty case first.",
+        "Trace the first sample manually and make your variables follow that trace."
       ],
       "starterCode": "func Solve(words []string) map[string]int {\n    return nil\n}",
       "solutionCode": "package main\nimport \"strings\"\nfunc Solve(words []string) map[string]int { m:=map[string]int{}; for _,w:=range words {m[strings.ToLower(w)]++}; return m }",
@@ -341,13 +374,13 @@
         }
       ],
       "testCode": "func main(){ assertEqual(Solve([]string{\"Go\",\"go\",\"Fun\"}), map[string]int{\"go\":2,\"fun\":1}) }",
-      "lessonTitle": "Slices, maps, structs, and JSON-shaped data",
-      "lesson": "Composite types let you model real data. Slices are views over arrays, maps are hash tables with useful zero values, and structs give names to fields. Most Go interview-style problems become simple once you pick the right composite type.\n\nStudy goal: understand the idea before touching the editor. For this problem, identify the input type, the output type, and the one transformation between them. Then write a tiny Go function that expresses that transformation directly.\n\nKey Go habit: Use slices for ordered sequences, maps for membership/counting, and structs when fields have meaning.",
-      "approach": "Approach: solve Word Frequency by choosing the simplest representation for maps, strings. Start with the zero/empty input. Then add the main loop or helper. Keep the function deterministic: same input, same output, no hidden global state.",
+      "lessonTitle": "Why this matters: Word Frequency",
+      "lesson": "This exercise belongs to Composite Types.\n\nThe big idea: Arrays, slices, maps, structs, and JSON-shaped data.\n\nDo not treat this like random syntax practice. Treat it like learning a mental move. Every Go problem has three visible things: the data coming in, the state you keep while working, and the data going out. If you can name those three, the code usually becomes short.\n\nFor this problem, stare at the function signature first. The parameter types tell you what world you are living in. A []int means order matters. A map means lookup/counting matters. A string means you must ask: bytes or runes? A struct means fields have meaning.\n\nYour study goal: solve it once slowly and clearly. Then solve it again with fewer moving parts. Idiomatic Go usually feels calm: small variables, explicit loops, boring names, and no magic.",
+      "approach": "Attack plan for Word Frequency:\n\n1. Identify the zero/empty case before writing the main logic.\n2. Choose the smallest useful state variable. Do not create a framework for a 10-line function.\n3. Walk through one sample by hand and make your variable changes match that story.\n4. Only after it works, ask if the code reads like plain English.\n\nFor this specific task, the core move is: Return the count for each word after lowercasing ASCII letters. Keep the implementation direct; the judge rewards correctness and clarity, not cleverness.",
       "pitfalls": [
-        "Forgetting Go zero values can either help or hurt depending on the type.",
-        "Overengineering with extra structs/interfaces before the simple function works.",
-        "Not testing empty, one-element, and repeated-value cases."
+        "Starting with code before understanding the input/output shape.",
+        "Using a clever abstraction where a plain loop or map would be clearer.",
+        "Skipping edge cases: empty input, one item, duplicates, negative numbers, or Unicode depending on the problem."
       ]
     },
     {
@@ -360,11 +393,11 @@
         "recursion"
       ],
       "statement": "Given a JSON-like nested integer list encoded as interface values, compute max nesting depth.",
-      "explanation": "This problem practices recursion in the spirit of the Go book chapter. Focus on small, idiomatic Go: clear types, simple loops, and explicit error-free control flow. The intended solution avoids cleverness and shows how Go programs compose primitives into readable code.",
+      "explanation": "Intuition first: this problem is asking you to model one tiny transformation. The input is not mysterious; it is just data waiting to be reshaped into the return value.\n\nA good Go solution here avoids hiding the important state. If you need a running answer, name it something like total, out, seen, or best. If you need to remember membership, use a map. If you need to preserve order, keep a slice. If you need to inspect text, decide whether byte-level or rune-level processing is correct.\n\nThe reference solution is short because the data structure does most of the work. Read it from top to bottom and track exactly how the state changes for the first example. That trace is the real explanation.\n\nWhy this is idiomatic Go: concrete types, explicit control flow, useful zero values, and small helper logic. If your solution has more ceremony than the problem statement, simplify it.",
       "hints": [
-        "Start with the simplest data representation.",
-        "Prefer explicit loops and small helper functions.",
-        "Think about zero values and empty inputs."
+        "Say the function signature in English before coding.",
+        "Write the zero/empty case first.",
+        "Trace the first sample manually and make your variables follow that trace."
       ],
       "starterCode": "func Solve(v any) int {\n    return 0\n}",
       "solutionCode": "package main\nfunc Solve(v any) int { switch x:=v.(type){ case []any: best:=1; for _,e:=range x { if d:=1+Solve(e); d>best {best=d} }; return best; default: return 0 } }",
@@ -375,13 +408,13 @@
         }
       ],
       "testCode": "func main(){ assertEqual(Solve([]any{1, []any{2, []any{3}}}), 3); assertEqual(Solve(7),0) }",
-      "lessonTitle": "Functions and recursion",
-      "lesson": "Functions in Go are values with clear parameter and return types. Good Go functions are small, named around what they compute, and easy to test. Recursion is useful for tree-shaped or nested data but should have an obvious base case.\n\nStudy goal: understand the idea before touching the editor. For this problem, identify the input type, the output type, and the one transformation between them. Then write a tiny Go function that expresses that transformation directly.\n\nKey Go habit: Write the base case before the recursive case. Return values instead of mutating global state.",
-      "approach": "Approach: solve Nested List Depth by choosing the simplest representation for recursion. Start with the zero/empty input. Then add the main loop or helper. Keep the function deterministic: same input, same output, no hidden global state.",
+      "lessonTitle": "Why this matters: Nested List Depth",
+      "lesson": "This exercise belongs to Functions.\n\nThe big idea: Function design, errors, recursion, closures, panic/recover, and defer.\n\nDo not treat this like random syntax practice. Treat it like learning a mental move. Every Go problem has three visible things: the data coming in, the state you keep while working, and the data going out. If you can name those three, the code usually becomes short.\n\nFor this problem, stare at the function signature first. The parameter types tell you what world you are living in. A []int means order matters. A map means lookup/counting matters. A string means you must ask: bytes or runes? A struct means fields have meaning.\n\nYour study goal: solve it once slowly and clearly. Then solve it again with fewer moving parts. Idiomatic Go usually feels calm: small variables, explicit loops, boring names, and no magic.",
+      "approach": "Attack plan for Nested List Depth:\n\n1. Identify the zero/empty case before writing the main logic.\n2. Choose the smallest useful state variable. Do not create a framework for a 10-line function.\n3. Walk through one sample by hand and make your variable changes match that story.\n4. Only after it works, ask if the code reads like plain English.\n\nFor this specific task, the core move is: Given a JSON-like nested integer list encoded as interface values, compute max nesting depth. Keep the implementation direct; the judge rewards correctness and clarity, not cleverness.",
       "pitfalls": [
-        "Forgetting Go zero values can either help or hurt depending on the type.",
-        "Overengineering with extra structs/interfaces before the simple function works.",
-        "Not testing empty, one-element, and repeated-value cases."
+        "Starting with code before understanding the input/output shape.",
+        "Using a clever abstraction where a plain loop or map would be clearer.",
+        "Skipping edge cases: empty input, one item, duplicates, negative numbers, or Unicode depending on the problem."
       ]
     },
     {
@@ -395,11 +428,11 @@
         "loops"
       ],
       "statement": "Process numbers left-to-right, but multiply positive numbers as if deferred in reverse; return the same final product.",
-      "explanation": "This problem practices defer, loops in the spirit of the Go book chapter. Focus on small, idiomatic Go: clear types, simple loops, and explicit error-free control flow. The intended solution avoids cleverness and shows how Go programs compose primitives into readable code.",
+      "explanation": "Intuition first: this problem is asking you to model one tiny transformation. The input is not mysterious; it is just data waiting to be reshaped into the return value.\n\nA good Go solution here avoids hiding the important state. If you need a running answer, name it something like total, out, seen, or best. If you need to remember membership, use a map. If you need to preserve order, keep a slice. If you need to inspect text, decide whether byte-level or rune-level processing is correct.\n\nThe reference solution is short because the data structure does most of the work. Read it from top to bottom and track exactly how the state changes for the first example. That trace is the real explanation.\n\nWhy this is idiomatic Go: concrete types, explicit control flow, useful zero values, and small helper logic. If your solution has more ceremony than the problem statement, simplify it.",
       "hints": [
-        "Start with the simplest data representation.",
-        "Prefer explicit loops and small helper functions.",
-        "Think about zero values and empty inputs."
+        "Say the function signature in English before coding.",
+        "Write the zero/empty case first.",
+        "Trace the first sample manually and make your variables follow that trace."
       ],
       "starterCode": "func Solve(nums []int) int {\n    return 1\n}",
       "solutionCode": "package main\nfunc Solve(nums []int) int { p:=1; for _,x:=range nums { if x>0 {p*=x} }; return p }",
@@ -410,13 +443,13 @@
         }
       ],
       "testCode": "func main(){ assertEqual(Solve([]int{-1,2,3}),6); assertEqual(Solve([]int{-1,0}),1) }",
-      "lessonTitle": "Functions and recursion",
-      "lesson": "Functions in Go are values with clear parameter and return types. Good Go functions are small, named around what they compute, and easy to test. Recursion is useful for tree-shaped or nested data but should have an obvious base case.\n\nStudy goal: understand the idea before touching the editor. For this problem, identify the input type, the output type, and the one transformation between them. Then write a tiny Go function that expresses that transformation directly.\n\nKey Go habit: Write the base case before the recursive case. Return values instead of mutating global state.",
-      "approach": "Approach: solve Deferred Product by choosing the simplest representation for defer, loops. Start with the zero/empty input. Then add the main loop or helper. Keep the function deterministic: same input, same output, no hidden global state.",
+      "lessonTitle": "Why this matters: Deferred Product",
+      "lesson": "This exercise belongs to Functions.\n\nThe big idea: Function design, errors, recursion, closures, panic/recover, and defer.\n\nDo not treat this like random syntax practice. Treat it like learning a mental move. Every Go problem has three visible things: the data coming in, the state you keep while working, and the data going out. If you can name those three, the code usually becomes short.\n\nFor this problem, stare at the function signature first. The parameter types tell you what world you are living in. A []int means order matters. A map means lookup/counting matters. A string means you must ask: bytes or runes? A struct means fields have meaning.\n\nYour study goal: solve it once slowly and clearly. Then solve it again with fewer moving parts. Idiomatic Go usually feels calm: small variables, explicit loops, boring names, and no magic.",
+      "approach": "Attack plan for Deferred Product:\n\n1. Identify the zero/empty case before writing the main logic.\n2. Choose the smallest useful state variable. Do not create a framework for a 10-line function.\n3. Walk through one sample by hand and make your variable changes match that story.\n4. Only after it works, ask if the code reads like plain English.\n\nFor this specific task, the core move is: Process numbers left-to-right, but multiply positive numbers as if deferred in reverse; return the same final product. Keep the implementation direct; the judge rewards correctness and clarity, not cleverness.",
       "pitfalls": [
-        "Forgetting Go zero values can either help or hurt depending on the type.",
-        "Overengineering with extra structs/interfaces before the simple function works.",
-        "Not testing empty, one-element, and repeated-value cases."
+        "Starting with code before understanding the input/output shape.",
+        "Using a clever abstraction where a plain loop or map would be clearer.",
+        "Skipping edge cases: empty input, one item, duplicates, negative numbers, or Unicode depending on the problem."
       ]
     },
     {
@@ -430,11 +463,11 @@
         "methods"
       ],
       "statement": "Implement a method-style helper concept: return Manhattan distance between two points.",
-      "explanation": "This problem practices structs, methods in the spirit of the Go book chapter. Focus on small, idiomatic Go: clear types, simple loops, and explicit error-free control flow. The intended solution avoids cleverness and shows how Go programs compose primitives into readable code.",
+      "explanation": "Intuition first: this problem is asking you to model one tiny transformation. The input is not mysterious; it is just data waiting to be reshaped into the return value.\n\nA good Go solution here avoids hiding the important state. If you need a running answer, name it something like total, out, seen, or best. If you need to remember membership, use a map. If you need to preserve order, keep a slice. If you need to inspect text, decide whether byte-level or rune-level processing is correct.\n\nThe reference solution is short because the data structure does most of the work. Read it from top to bottom and track exactly how the state changes for the first example. That trace is the real explanation.\n\nWhy this is idiomatic Go: concrete types, explicit control flow, useful zero values, and small helper logic. If your solution has more ceremony than the problem statement, simplify it.",
       "hints": [
-        "Start with the simplest data representation.",
-        "Prefer explicit loops and small helper functions.",
-        "Think about zero values and empty inputs."
+        "Say the function signature in English before coding.",
+        "Write the zero/empty case first.",
+        "Trace the first sample manually and make your variables follow that trace."
       ],
       "starterCode": "type Point struct{ X, Y int }\nfunc Solve(a, b Point) int {\n    return 0\n}",
       "solutionCode": "package main\ntype Point struct{X,Y int}\nfunc abs(x int) int { if x<0 {return -x}; return x }\nfunc Solve(a,b Point) int { return abs(a.X-b.X)+abs(a.Y-b.Y) }",
@@ -445,13 +478,13 @@
         }
       ],
       "testCode": "func main(){ assertEqual(Solve(Point{1,2},Point{4,0}),5); assertEqual(Solve(Point{-1,-1},Point{1,1}),4) }",
-      "lessonTitle": "Methods and data behavior",
-      "lesson": "A method is a function with a receiver. Methods let a type own behavior without hiding data behind a large class hierarchy. Pointer receivers mutate or avoid copying; value receivers are good for small immutable values.\n\nStudy goal: understand the idea before touching the editor. For this problem, identify the input type, the output type, and the one transformation between them. Then write a tiny Go function that expresses that transformation directly.\n\nKey Go habit: If the method changes the receiver, use a pointer receiver. Otherwise keep it value-based unless the type is large.",
-      "approach": "Approach: solve Point Manhattan by choosing the simplest representation for structs, methods. Start with the zero/empty input. Then add the main loop or helper. Keep the function deterministic: same input, same output, no hidden global state.",
+      "lessonTitle": "Why this matters: Point Manhattan",
+      "lesson": "This exercise belongs to Methods.\n\nThe big idea: Receivers, method sets, encapsulation-by-convention, and reusable data behavior.\n\nDo not treat this like random syntax practice. Treat it like learning a mental move. Every Go problem has three visible things: the data coming in, the state you keep while working, and the data going out. If you can name those three, the code usually becomes short.\n\nFor this problem, stare at the function signature first. The parameter types tell you what world you are living in. A []int means order matters. A map means lookup/counting matters. A string means you must ask: bytes or runes? A struct means fields have meaning.\n\nYour study goal: solve it once slowly and clearly. Then solve it again with fewer moving parts. Idiomatic Go usually feels calm: small variables, explicit loops, boring names, and no magic.",
+      "approach": "Attack plan for Point Manhattan:\n\n1. Identify the zero/empty case before writing the main logic.\n2. Choose the smallest useful state variable. Do not create a framework for a 10-line function.\n3. Walk through one sample by hand and make your variable changes match that story.\n4. Only after it works, ask if the code reads like plain English.\n\nFor this specific task, the core move is: Implement a method-style helper concept: return Manhattan distance between two points. Keep the implementation direct; the judge rewards correctness and clarity, not cleverness.",
       "pitfalls": [
-        "Forgetting Go zero values can either help or hurt depending on the type.",
-        "Overengineering with extra structs/interfaces before the simple function works.",
-        "Not testing empty, one-element, and repeated-value cases."
+        "Starting with code before understanding the input/output shape.",
+        "Using a clever abstraction where a plain loop or map would be clearer.",
+        "Skipping edge cases: empty input, one item, duplicates, negative numbers, or Unicode depending on the problem."
       ]
     },
     {
@@ -465,11 +498,11 @@
         "maps"
       ],
       "statement": "Represent sets with maps and return a sorted union of two sets.",
-      "explanation": "This problem practices methods, maps in the spirit of the Go book chapter. Focus on small, idiomatic Go: clear types, simple loops, and explicit error-free control flow. The intended solution avoids cleverness and shows how Go programs compose primitives into readable code.",
+      "explanation": "Intuition first: this problem is asking you to model one tiny transformation. The input is not mysterious; it is just data waiting to be reshaped into the return value.\n\nA good Go solution here avoids hiding the important state. If you need a running answer, name it something like total, out, seen, or best. If you need to remember membership, use a map. If you need to preserve order, keep a slice. If you need to inspect text, decide whether byte-level or rune-level processing is correct.\n\nThe reference solution is short because the data structure does most of the work. Read it from top to bottom and track exactly how the state changes for the first example. That trace is the real explanation.\n\nWhy this is idiomatic Go: concrete types, explicit control flow, useful zero values, and small helper logic. If your solution has more ceremony than the problem statement, simplify it.",
       "hints": [
-        "Start with the simplest data representation.",
-        "Prefer explicit loops and small helper functions.",
-        "Think about zero values and empty inputs."
+        "Say the function signature in English before coding.",
+        "Write the zero/empty case first.",
+        "Trace the first sample manually and make your variables follow that trace."
       ],
       "starterCode": "func Solve(a, b []string) []string {\n    return nil\n}",
       "solutionCode": "package main\nimport \"sort\"\nfunc Solve(a,b []string) []string { m:=map[string]bool{}; for _,s:=range a {m[s]=true}; for _,s:=range b {m[s]=true}; out:=[]string{}; for s:=range m {out=append(out,s)}; sort.Strings(out); return out }",
@@ -480,13 +513,13 @@
         }
       ],
       "testCode": "func main(){ assertEqual(Solve([]string{\"b\",\"a\"},[]string{\"c\",\"a\"}), []string{\"a\",\"b\",\"c\"}) }",
-      "lessonTitle": "Methods and data behavior",
-      "lesson": "A method is a function with a receiver. Methods let a type own behavior without hiding data behind a large class hierarchy. Pointer receivers mutate or avoid copying; value receivers are good for small immutable values.\n\nStudy goal: understand the idea before touching the editor. For this problem, identify the input type, the output type, and the one transformation between them. Then write a tiny Go function that expresses that transformation directly.\n\nKey Go habit: If the method changes the receiver, use a pointer receiver. Otherwise keep it value-based unless the type is large.",
-      "approach": "Approach: solve String Set Union by choosing the simplest representation for methods, maps. Start with the zero/empty input. Then add the main loop or helper. Keep the function deterministic: same input, same output, no hidden global state.",
+      "lessonTitle": "Why this matters: String Set Union",
+      "lesson": "This exercise belongs to Methods.\n\nThe big idea: Receivers, method sets, encapsulation-by-convention, and reusable data behavior.\n\nDo not treat this like random syntax practice. Treat it like learning a mental move. Every Go problem has three visible things: the data coming in, the state you keep while working, and the data going out. If you can name those three, the code usually becomes short.\n\nFor this problem, stare at the function signature first. The parameter types tell you what world you are living in. A []int means order matters. A map means lookup/counting matters. A string means you must ask: bytes or runes? A struct means fields have meaning.\n\nYour study goal: solve it once slowly and clearly. Then solve it again with fewer moving parts. Idiomatic Go usually feels calm: small variables, explicit loops, boring names, and no magic.",
+      "approach": "Attack plan for String Set Union:\n\n1. Identify the zero/empty case before writing the main logic.\n2. Choose the smallest useful state variable. Do not create a framework for a 10-line function.\n3. Walk through one sample by hand and make your variable changes match that story.\n4. Only after it works, ask if the code reads like plain English.\n\nFor this specific task, the core move is: Represent sets with maps and return a sorted union of two sets. Keep the implementation direct; the judge rewards correctness and clarity, not cleverness.",
       "pitfalls": [
-        "Forgetting Go zero values can either help or hurt depending on the type.",
-        "Overengineering with extra structs/interfaces before the simple function works.",
-        "Not testing empty, one-element, and repeated-value cases."
+        "Starting with code before understanding the input/output shape.",
+        "Using a clever abstraction where a plain loop or map would be clearer.",
+        "Skipping edge cases: empty input, one item, duplicates, negative numbers, or Unicode depending on the problem."
       ]
     },
     {
@@ -500,11 +533,11 @@
         "io"
       ],
       "statement": "Given chunks from an abstract reader, count total bytes.",
-      "explanation": "This problem practices interfaces, io in the spirit of the Go book chapter. Focus on small, idiomatic Go: clear types, simple loops, and explicit error-free control flow. The intended solution avoids cleverness and shows how Go programs compose primitives into readable code.",
+      "explanation": "Intuition first: this problem is asking you to model one tiny transformation. The input is not mysterious; it is just data waiting to be reshaped into the return value.\n\nA good Go solution here avoids hiding the important state. If you need a running answer, name it something like total, out, seen, or best. If you need to remember membership, use a map. If you need to preserve order, keep a slice. If you need to inspect text, decide whether byte-level or rune-level processing is correct.\n\nThe reference solution is short because the data structure does most of the work. Read it from top to bottom and track exactly how the state changes for the first example. That trace is the real explanation.\n\nWhy this is idiomatic Go: concrete types, explicit control flow, useful zero values, and small helper logic. If your solution has more ceremony than the problem statement, simplify it.",
       "hints": [
-        "Start with the simplest data representation.",
-        "Prefer explicit loops and small helper functions.",
-        "Think about zero values and empty inputs."
+        "Say the function signature in English before coding.",
+        "Write the zero/empty case first.",
+        "Trace the first sample manually and make your variables follow that trace."
       ],
       "starterCode": "func Solve(chunks []string) int {\n    return 0\n}",
       "solutionCode": "package main\nfunc Solve(chunks []string) int { n:=0; for _,s:=range chunks {n+=len([]byte(s))}; return n }",
@@ -515,13 +548,13 @@
         }
       ],
       "testCode": "func main(){ assertEqual(Solve([]string{\"go\",\"lang\"}),6); assertEqual(Solve([]string{\"\u03c0\"}),2) }",
-      "lessonTitle": "Interfaces as behavior contracts",
-      "lesson": "Interfaces describe behavior, not data. In Go, a type satisfies an interface implicitly by having the required methods. This makes small interfaces powerful: io.Reader, sort.Interface, fmt.Stringer.\n\nStudy goal: understand the idea before touching the editor. For this problem, identify the input type, the output type, and the one transformation between them. Then write a tiny Go function that expresses that transformation directly.\n\nKey Go habit: Accept interfaces when you need behavior. Return concrete types when you create values.",
-      "approach": "Approach: solve Count Bytes by choosing the simplest representation for interfaces, io. Start with the zero/empty input. Then add the main loop or helper. Keep the function deterministic: same input, same output, no hidden global state.",
+      "lessonTitle": "Why this matters: Count Bytes",
+      "lesson": "This exercise belongs to Interfaces.\n\nThe big idea: Small behavior contracts, sorting, readers/writers, type assertions, and polymorphism.\n\nDo not treat this like random syntax practice. Treat it like learning a mental move. Every Go problem has three visible things: the data coming in, the state you keep while working, and the data going out. If you can name those three, the code usually becomes short.\n\nFor this problem, stare at the function signature first. The parameter types tell you what world you are living in. A []int means order matters. A map means lookup/counting matters. A string means you must ask: bytes or runes? A struct means fields have meaning.\n\nYour study goal: solve it once slowly and clearly. Then solve it again with fewer moving parts. Idiomatic Go usually feels calm: small variables, explicit loops, boring names, and no magic.",
+      "approach": "Attack plan for Count Bytes:\n\n1. Identify the zero/empty case before writing the main logic.\n2. Choose the smallest useful state variable. Do not create a framework for a 10-line function.\n3. Walk through one sample by hand and make your variable changes match that story.\n4. Only after it works, ask if the code reads like plain English.\n\nFor this specific task, the core move is: Given chunks from an abstract reader, count total bytes. Keep the implementation direct; the judge rewards correctness and clarity, not cleverness.",
       "pitfalls": [
-        "Forgetting Go zero values can either help or hurt depending on the type.",
-        "Overengineering with extra structs/interfaces before the simple function works.",
-        "Not testing empty, one-element, and repeated-value cases."
+        "Starting with code before understanding the input/output shape.",
+        "Using a clever abstraction where a plain loop or map would be clearer.",
+        "Skipping edge cases: empty input, one item, duplicates, negative numbers, or Unicode depending on the problem."
       ]
     },
     {
@@ -535,11 +568,11 @@
         "sorting"
       ],
       "statement": "Sort records by score descending, then name ascending.",
-      "explanation": "This problem practices interfaces, sorting in the spirit of the Go book chapter. Focus on small, idiomatic Go: clear types, simple loops, and explicit error-free control flow. The intended solution avoids cleverness and shows how Go programs compose primitives into readable code.",
+      "explanation": "Intuition first: this problem is asking you to model one tiny transformation. The input is not mysterious; it is just data waiting to be reshaped into the return value.\n\nA good Go solution here avoids hiding the important state. If you need a running answer, name it something like total, out, seen, or best. If you need to remember membership, use a map. If you need to preserve order, keep a slice. If you need to inspect text, decide whether byte-level or rune-level processing is correct.\n\nThe reference solution is short because the data structure does most of the work. Read it from top to bottom and track exactly how the state changes for the first example. That trace is the real explanation.\n\nWhy this is idiomatic Go: concrete types, explicit control flow, useful zero values, and small helper logic. If your solution has more ceremony than the problem statement, simplify it.",
       "hints": [
-        "Start with the simplest data representation.",
-        "Prefer explicit loops and small helper functions.",
-        "Think about zero values and empty inputs."
+        "Say the function signature in English before coding.",
+        "Write the zero/empty case first.",
+        "Trace the first sample manually and make your variables follow that trace."
       ],
       "starterCode": "type Person struct{Name string; Score int}\nfunc Solve(xs []Person) []Person {\n    return nil\n}",
       "solutionCode": "package main\nimport \"sort\"\ntype Person struct{Name string; Score int}\nfunc Solve(xs []Person) []Person { out:=append([]Person{},xs...); sort.Slice(out, func(i,j int) bool { if out[i].Score==out[j].Score {return out[i].Name<out[j].Name}; return out[i].Score>out[j].Score }); return out }",
@@ -550,13 +583,13 @@
         }
       ],
       "testCode": "func main(){ assertEqual(Solve([]Person{{\"Bob\",2},{\"Ada\",3},{\"Amy\",3}}), []Person{{\"Ada\",3},{\"Amy\",3},{\"Bob\",2}}) }",
-      "lessonTitle": "Interfaces as behavior contracts",
-      "lesson": "Interfaces describe behavior, not data. In Go, a type satisfies an interface implicitly by having the required methods. This makes small interfaces powerful: io.Reader, sort.Interface, fmt.Stringer.\n\nStudy goal: understand the idea before touching the editor. For this problem, identify the input type, the output type, and the one transformation between them. Then write a tiny Go function that expresses that transformation directly.\n\nKey Go habit: Accept interfaces when you need behavior. Return concrete types when you create values.",
-      "approach": "Approach: solve Sort People by choosing the simplest representation for interfaces, sorting. Start with the zero/empty input. Then add the main loop or helper. Keep the function deterministic: same input, same output, no hidden global state.",
+      "lessonTitle": "Why this matters: Sort People",
+      "lesson": "This exercise belongs to Interfaces.\n\nThe big idea: Small behavior contracts, sorting, readers/writers, type assertions, and polymorphism.\n\nDo not treat this like random syntax practice. Treat it like learning a mental move. Every Go problem has three visible things: the data coming in, the state you keep while working, and the data going out. If you can name those three, the code usually becomes short.\n\nFor this problem, stare at the function signature first. The parameter types tell you what world you are living in. A []int means order matters. A map means lookup/counting matters. A string means you must ask: bytes or runes? A struct means fields have meaning.\n\nYour study goal: solve it once slowly and clearly. Then solve it again with fewer moving parts. Idiomatic Go usually feels calm: small variables, explicit loops, boring names, and no magic.",
+      "approach": "Attack plan for Sort People:\n\n1. Identify the zero/empty case before writing the main logic.\n2. Choose the smallest useful state variable. Do not create a framework for a 10-line function.\n3. Walk through one sample by hand and make your variable changes match that story.\n4. Only after it works, ask if the code reads like plain English.\n\nFor this specific task, the core move is: Sort records by score descending, then name ascending. Keep the implementation direct; the judge rewards correctness and clarity, not cleverness.",
       "pitfalls": [
-        "Forgetting Go zero values can either help or hurt depending on the type.",
-        "Overengineering with extra structs/interfaces before the simple function works.",
-        "Not testing empty, one-element, and repeated-value cases."
+        "Starting with code before understanding the input/output shape.",
+        "Using a clever abstraction where a plain loop or map would be clearer.",
+        "Skipping edge cases: empty input, one item, duplicates, negative numbers, or Unicode depending on the problem."
       ]
     },
     {
@@ -570,11 +603,11 @@
         "channels"
       ],
       "statement": "Use goroutine-style thinking: return the sum of squares of all numbers.",
-      "explanation": "This problem practices concurrency, channels in the spirit of the Go book chapter. Focus on small, idiomatic Go: clear types, simple loops, and explicit error-free control flow. The intended solution avoids cleverness and shows how Go programs compose primitives into readable code.",
+      "explanation": "Intuition first: this problem is asking you to model one tiny transformation. The input is not mysterious; it is just data waiting to be reshaped into the return value.\n\nA good Go solution here avoids hiding the important state. If you need a running answer, name it something like total, out, seen, or best. If you need to remember membership, use a map. If you need to preserve order, keep a slice. If you need to inspect text, decide whether byte-level or rune-level processing is correct.\n\nThe reference solution is short because the data structure does most of the work. Read it from top to bottom and track exactly how the state changes for the first example. That trace is the real explanation.\n\nWhy this is idiomatic Go: concrete types, explicit control flow, useful zero values, and small helper logic. If your solution has more ceremony than the problem statement, simplify it.",
       "hints": [
-        "Start with the simplest data representation.",
-        "Prefer explicit loops and small helper functions.",
-        "Think about zero values and empty inputs."
+        "Say the function signature in English before coding.",
+        "Write the zero/empty case first.",
+        "Trace the first sample manually and make your variables follow that trace."
       ],
       "starterCode": "func Solve(nums []int) int {\n    return 0\n}",
       "solutionCode": "package main\nfunc Solve(nums []int) int { s:=0; for _,x:=range nums {s+=x*x}; return s }",
@@ -585,13 +618,13 @@
         }
       ],
       "testCode": "func main(){ assertEqual(Solve([]int{1,2,3}),14); assertEqual(Solve([]int{-2,3}),13) }",
-      "lessonTitle": "Goroutines, channels, and pipelines",
-      "lesson": "Concurrency in Go is about composing independent activities. Goroutines run functions concurrently; channels coordinate communication. Even when solving sequential exercises, pipeline thinking helps separate stages: produce, transform, collect.\n\nStudy goal: understand the idea before touching the editor. For this problem, identify the input type, the output type, and the one transformation between them. Then write a tiny Go function that expresses that transformation directly.\n\nKey Go habit: Do not start goroutines just to look fancy. First design the data flow; then add concurrency only if it makes the flow clearer or faster.",
-      "approach": "Approach: solve Pipeline Sum by choosing the simplest representation for concurrency, channels. Start with the zero/empty input. Then add the main loop or helper. Keep the function deterministic: same input, same output, no hidden global state.",
+      "lessonTitle": "Why this matters: Pipeline Sum",
+      "lesson": "This exercise belongs to Goroutines and Channels.\n\nThe big idea: Goroutines, channels, pipelines, cancellation, fan-in/fan-out.\n\nDo not treat this like random syntax practice. Treat it like learning a mental move. Every Go problem has three visible things: the data coming in, the state you keep while working, and the data going out. If you can name those three, the code usually becomes short.\n\nFor this problem, stare at the function signature first. The parameter types tell you what world you are living in. A []int means order matters. A map means lookup/counting matters. A string means you must ask: bytes or runes? A struct means fields have meaning.\n\nYour study goal: solve it once slowly and clearly. Then solve it again with fewer moving parts. Idiomatic Go usually feels calm: small variables, explicit loops, boring names, and no magic.",
+      "approach": "Attack plan for Pipeline Sum:\n\n1. Identify the zero/empty case before writing the main logic.\n2. Choose the smallest useful state variable. Do not create a framework for a 10-line function.\n3. Walk through one sample by hand and make your variable changes match that story.\n4. Only after it works, ask if the code reads like plain English.\n\nFor this specific task, the core move is: Use goroutine-style thinking: return the sum of squares of all numbers. Keep the implementation direct; the judge rewards correctness and clarity, not cleverness.",
       "pitfalls": [
-        "Forgetting Go zero values can either help or hurt depending on the type.",
-        "Overengineering with extra structs/interfaces before the simple function works.",
-        "Not testing empty, one-element, and repeated-value cases."
+        "Starting with code before understanding the input/output shape.",
+        "Using a clever abstraction where a plain loop or map would be clearer.",
+        "Skipping edge cases: empty input, one item, duplicates, negative numbers, or Unicode depending on the problem."
       ]
     },
     {
@@ -605,11 +638,11 @@
         "merge"
       ],
       "statement": "Merge two sorted integer streams into one sorted slice.",
-      "explanation": "This problem practices concurrency, merge in the spirit of the Go book chapter. Focus on small, idiomatic Go: clear types, simple loops, and explicit error-free control flow. The intended solution avoids cleverness and shows how Go programs compose primitives into readable code.",
+      "explanation": "Intuition first: this problem is asking you to model one tiny transformation. The input is not mysterious; it is just data waiting to be reshaped into the return value.\n\nA good Go solution here avoids hiding the important state. If you need a running answer, name it something like total, out, seen, or best. If you need to remember membership, use a map. If you need to preserve order, keep a slice. If you need to inspect text, decide whether byte-level or rune-level processing is correct.\n\nThe reference solution is short because the data structure does most of the work. Read it from top to bottom and track exactly how the state changes for the first example. That trace is the real explanation.\n\nWhy this is idiomatic Go: concrete types, explicit control flow, useful zero values, and small helper logic. If your solution has more ceremony than the problem statement, simplify it.",
       "hints": [
-        "Start with the simplest data representation.",
-        "Prefer explicit loops and small helper functions.",
-        "Think about zero values and empty inputs."
+        "Say the function signature in English before coding.",
+        "Write the zero/empty case first.",
+        "Trace the first sample manually and make your variables follow that trace."
       ],
       "starterCode": "func Solve(a, b []int) []int {\n    return nil\n}",
       "solutionCode": "package main\nfunc Solve(a,b []int) []int { i,j:=0,0; out:=[]int{}; for i<len(a)||j<len(b){ if j==len(b)||(i<len(a)&&a[i]<=b[j]){out=append(out,a[i]); i++}else{out=append(out,b[j]); j++} }; return out }",
@@ -620,13 +653,363 @@
         }
       ],
       "testCode": "func main(){ assertEqual(Solve([]int{1,3},[]int{2,4}), []int{1,2,3,4}); assertEqual(Solve([]int{},[]int{1}), []int{1}) }",
-      "lessonTitle": "Goroutines, channels, and pipelines",
-      "lesson": "Concurrency in Go is about composing independent activities. Goroutines run functions concurrently; channels coordinate communication. Even when solving sequential exercises, pipeline thinking helps separate stages: produce, transform, collect.\n\nStudy goal: understand the idea before touching the editor. For this problem, identify the input type, the output type, and the one transformation between them. Then write a tiny Go function that expresses that transformation directly.\n\nKey Go habit: Do not start goroutines just to look fancy. First design the data flow; then add concurrency only if it makes the flow clearer or faster.",
-      "approach": "Approach: solve Merge Sorted Streams by choosing the simplest representation for concurrency, merge. Start with the zero/empty input. Then add the main loop or helper. Keep the function deterministic: same input, same output, no hidden global state.",
+      "lessonTitle": "Why this matters: Merge Sorted Streams",
+      "lesson": "This exercise belongs to Goroutines and Channels.\n\nThe big idea: Goroutines, channels, pipelines, cancellation, fan-in/fan-out.\n\nDo not treat this like random syntax practice. Treat it like learning a mental move. Every Go problem has three visible things: the data coming in, the state you keep while working, and the data going out. If you can name those three, the code usually becomes short.\n\nFor this problem, stare at the function signature first. The parameter types tell you what world you are living in. A []int means order matters. A map means lookup/counting matters. A string means you must ask: bytes or runes? A struct means fields have meaning.\n\nYour study goal: solve it once slowly and clearly. Then solve it again with fewer moving parts. Idiomatic Go usually feels calm: small variables, explicit loops, boring names, and no magic.",
+      "approach": "Attack plan for Merge Sorted Streams:\n\n1. Identify the zero/empty case before writing the main logic.\n2. Choose the smallest useful state variable. Do not create a framework for a 10-line function.\n3. Walk through one sample by hand and make your variable changes match that story.\n4. Only after it works, ask if the code reads like plain English.\n\nFor this specific task, the core move is: Merge two sorted integer streams into one sorted slice. Keep the implementation direct; the judge rewards correctness and clarity, not cleverness.",
       "pitfalls": [
-        "Forgetting Go zero values can either help or hurt depending on the type.",
-        "Overengineering with extra structs/interfaces before the simple function works.",
-        "Not testing empty, one-element, and repeated-value cases."
+        "Starting with code before understanding the input/output shape.",
+        "Using a clever abstraction where a plain loop or map would be clearer.",
+        "Skipping edge cases: empty input, one item, duplicates, negative numbers, or Unicode depending on the problem."
+      ]
+    },
+    {
+      "id": "safe-counter",
+      "number": 18,
+      "title": "Safe Counter",
+      "chapter": "ch9",
+      "difficulty": "Medium",
+      "tags": [
+        "mutex",
+        "state"
+      ],
+      "statement": "Given increments and decrements, return the final counter value.",
+      "lessonTitle": "Why this matters: Safe Counter",
+      "lesson": "This exercise belongs to Shared Variables and Mutexes.\n\nThe big idea: Race-free shared state, mutexes, once-only init, and confinement.\n\nThink of this as a lab exercise, not a trivia question. The point is to build an instinct: what kind of state does this situation need, and who owns that state?\n\nBefore coding, draw a tiny box for the current value you care about. If the value changes over time, ask what protects it. If the value is just being transformed, ask what the clean return shape should be.\n\nYour goal is not to memorize a trick. Your goal is to make the invisible rule visible in code.",
+      "approach": "Attack plan:\n\n1. Translate the requirement into one invariant: what should be true after each loop step?\n2. Pick the smallest state that preserves that invariant.\n3. Let Go zero values help when they are correct, but initialize from real data when zero would lie.\n4. Return the final state.\n\nCore move: Given increments and decrements, return the final counter value.",
+      "pitfalls": [
+        "Confusing the concept with unnecessary machinery.",
+        "Forgetting empty input behavior.",
+        "Returning nondeterministic output when sorted/stable output is expected."
+      ],
+      "hints": [
+        "Name the invariant before naming variables.",
+        "Prefer one clear owner for mutable state.",
+        "Make output deterministic if maps are involved."
+      ],
+      "explanation": "This problem is a small version of a real Go design decision. The solution works because it keeps the important state obvious and avoids pretending the problem is bigger than it is.\n\nRead the reference solution as a story: initialize the state, update it once per input item, return it. That pattern appears everywhere in Go: CLIs, servers, tests, parsers, and concurrent workers.\n\nIf you can explain why each variable exists, you understood the concept. If a variable feels decorative, remove it.",
+      "starterCode": "func Solve(ops []int) int {\n    return 0\n}",
+      "solutionCode": "func Solve(ops []int) int { total:=0; for _,v:=range ops { total+=v }; return total }",
+      "testCode": "func main(){ assertEqual(Solve([]int{1,1,-1,5}),6); assertEqual(Solve([]int{}),0) }",
+      "examples": [
+        {
+          "input": "[1,1,-1,5]",
+          "output": "6"
+        }
+      ]
+    },
+    {
+      "id": "once-max",
+      "number": 19,
+      "title": "Initialize Once Max",
+      "chapter": "ch9",
+      "difficulty": "Easy",
+      "tags": [
+        "once",
+        "zero-values"
+      ],
+      "statement": "Return the maximum number, or 0 for empty input.",
+      "lessonTitle": "Why this matters: Initialize Once Max",
+      "lesson": "This exercise belongs to Shared Variables and Mutexes.\n\nThe big idea: Race-free shared state, mutexes, once-only init, and confinement.\n\nThink of this as a lab exercise, not a trivia question. The point is to build an instinct: what kind of state does this situation need, and who owns that state?\n\nBefore coding, draw a tiny box for the current value you care about. If the value changes over time, ask what protects it. If the value is just being transformed, ask what the clean return shape should be.\n\nYour goal is not to memorize a trick. Your goal is to make the invisible rule visible in code.",
+      "approach": "Attack plan:\n\n1. Translate the requirement into one invariant: what should be true after each loop step?\n2. Pick the smallest state that preserves that invariant.\n3. Let Go zero values help when they are correct, but initialize from real data when zero would lie.\n4. Return the final state.\n\nCore move: Return the maximum number, or 0 for empty input.",
+      "pitfalls": [
+        "Confusing the concept with unnecessary machinery.",
+        "Forgetting empty input behavior.",
+        "Returning nondeterministic output when sorted/stable output is expected."
+      ],
+      "hints": [
+        "Name the invariant before naming variables.",
+        "Prefer one clear owner for mutable state.",
+        "Make output deterministic if maps are involved."
+      ],
+      "explanation": "This problem is a small version of a real Go design decision. The solution works because it keeps the important state obvious and avoids pretending the problem is bigger than it is.\n\nRead the reference solution as a story: initialize the state, update it once per input item, return it. That pattern appears everywhere in Go: CLIs, servers, tests, parsers, and concurrent workers.\n\nIf you can explain why each variable exists, you understood the concept. If a variable feels decorative, remove it.",
+      "starterCode": "func Solve(nums []int) int {\n    return 0\n}",
+      "solutionCode": "func Solve(nums []int) int { if len(nums)==0{return 0}; m:=nums[0]; for _,x:=range nums[1:] { if x>m {m=x} }; return m }",
+      "testCode": "func main(){ assertEqual(Solve([]int{3,1,5}),5); assertEqual(Solve([]int{-7,-2}),-2); assertEqual(Solve([]int{}),0) }",
+      "examples": [
+        {
+          "input": "[3,1,5]",
+          "output": "5"
+        }
+      ]
+    },
+    {
+      "id": "import-cleaner",
+      "number": 20,
+      "title": "Import Cleaner",
+      "chapter": "ch10",
+      "difficulty": "Easy",
+      "tags": [
+        "packages",
+        "sort"
+      ],
+      "statement": "Return unique non-empty import paths sorted alphabetically.",
+      "lessonTitle": "Why this matters: Import Cleaner",
+      "lesson": "This exercise belongs to Packages and the Go Tool.\n\nThe big idea: Package design, imports, internal APIs, modules, and build/test workflows.\n\nThink of this as a lab exercise, not a trivia question. The point is to build an instinct: what kind of state does this situation need, and who owns that state?\n\nBefore coding, draw a tiny box for the current value you care about. If the value changes over time, ask what protects it. If the value is just being transformed, ask what the clean return shape should be.\n\nYour goal is not to memorize a trick. Your goal is to make the invisible rule visible in code.",
+      "approach": "Attack plan:\n\n1. Translate the requirement into one invariant: what should be true after each loop step?\n2. Pick the smallest state that preserves that invariant.\n3. Let Go zero values help when they are correct, but initialize from real data when zero would lie.\n4. Return the final state.\n\nCore move: Return unique non-empty import paths sorted alphabetically.",
+      "pitfalls": [
+        "Confusing the concept with unnecessary machinery.",
+        "Forgetting empty input behavior.",
+        "Returning nondeterministic output when sorted/stable output is expected."
+      ],
+      "hints": [
+        "Name the invariant before naming variables.",
+        "Prefer one clear owner for mutable state.",
+        "Make output deterministic if maps are involved."
+      ],
+      "explanation": "This problem is a small version of a real Go design decision. The solution works because it keeps the important state obvious and avoids pretending the problem is bigger than it is.\n\nRead the reference solution as a story: initialize the state, update it once per input item, return it. That pattern appears everywhere in Go: CLIs, servers, tests, parsers, and concurrent workers.\n\nIf you can explain why each variable exists, you understood the concept. If a variable feels decorative, remove it.",
+      "starterCode": "func Solve(paths []string) []string {\n    return nil\n}",
+      "solutionCode": "import \"sort\"\nfunc Solve(paths []string) []string { m:=map[string]bool{}; for _,p:=range paths { if p!=\"\" {m[p]=true} }; out:=[]string{}; for p:=range m {out=append(out,p)}; sort.Strings(out); return out }",
+      "testCode": "func main(){ assertEqual(Solve([]string{\"fmt\",\"os\",\"fmt\",\"\"}),[]string{\"fmt\",\"os\"}) }",
+      "examples": [
+        {
+          "input": "[\"fmt\",\"os\",\"fmt\",\"\"]",
+          "output": "[\"fmt\",\"os\"]"
+        }
+      ]
+    },
+    {
+      "id": "module-path",
+      "number": 21,
+      "title": "Module Path Parts",
+      "chapter": "ch10",
+      "difficulty": "Medium",
+      "tags": [
+        "modules",
+        "strings"
+      ],
+      "statement": "Split a module path on slashes and remove empty parts.",
+      "lessonTitle": "Why this matters: Module Path Parts",
+      "lesson": "This exercise belongs to Packages and the Go Tool.\n\nThe big idea: Package design, imports, internal APIs, modules, and build/test workflows.\n\nThink of this as a lab exercise, not a trivia question. The point is to build an instinct: what kind of state does this situation need, and who owns that state?\n\nBefore coding, draw a tiny box for the current value you care about. If the value changes over time, ask what protects it. If the value is just being transformed, ask what the clean return shape should be.\n\nYour goal is not to memorize a trick. Your goal is to make the invisible rule visible in code.",
+      "approach": "Attack plan:\n\n1. Translate the requirement into one invariant: what should be true after each loop step?\n2. Pick the smallest state that preserves that invariant.\n3. Let Go zero values help when they are correct, but initialize from real data when zero would lie.\n4. Return the final state.\n\nCore move: Split a module path on slashes and remove empty parts.",
+      "pitfalls": [
+        "Confusing the concept with unnecessary machinery.",
+        "Forgetting empty input behavior.",
+        "Returning nondeterministic output when sorted/stable output is expected."
+      ],
+      "hints": [
+        "Name the invariant before naming variables.",
+        "Prefer one clear owner for mutable state.",
+        "Make output deterministic if maps are involved."
+      ],
+      "explanation": "This problem is a small version of a real Go design decision. The solution works because it keeps the important state obvious and avoids pretending the problem is bigger than it is.\n\nRead the reference solution as a story: initialize the state, update it once per input item, return it. That pattern appears everywhere in Go: CLIs, servers, tests, parsers, and concurrent workers.\n\nIf you can explain why each variable exists, you understood the concept. If a variable feels decorative, remove it.",
+      "starterCode": "func Solve(path string) []string {\n    return nil\n}",
+      "solutionCode": "import \"strings\"\nfunc Solve(path string) []string { raw:=strings.Split(path,\"/\"); out:=[]string{}; for _,p:=range raw { if p!=\"\" {out=append(out,p)} }; return out }",
+      "testCode": "func main(){ assertEqual(Solve(\"github.com/user/repo\"),[]string{\"github.com\",\"user\",\"repo\"}); assertEqual(Solve(\"/a//b/\"),[]string{\"a\",\"b\"}) }",
+      "examples": [
+        {
+          "input": "\"github.com/user/repo\"",
+          "output": "[\"github.com\",\"user\",\"repo\"]"
+        }
+      ]
+    },
+    {
+      "id": "table-sum",
+      "number": 22,
+      "title": "Table Test Sum",
+      "chapter": "ch11",
+      "difficulty": "Easy",
+      "tags": [
+        "testing",
+        "tables"
+      ],
+      "statement": "Return the sum of a slice of integers.",
+      "lessonTitle": "Why this matters: Table Test Sum",
+      "lesson": "This exercise belongs to Testing.\n\nThe big idea: Table tests, benchmarks, examples, coverage thinking, and testable design.\n\nThink of this as a lab exercise, not a trivia question. The point is to build an instinct: what kind of state does this situation need, and who owns that state?\n\nBefore coding, draw a tiny box for the current value you care about. If the value changes over time, ask what protects it. If the value is just being transformed, ask what the clean return shape should be.\n\nYour goal is not to memorize a trick. Your goal is to make the invisible rule visible in code.",
+      "approach": "Attack plan:\n\n1. Translate the requirement into one invariant: what should be true after each loop step?\n2. Pick the smallest state that preserves that invariant.\n3. Let Go zero values help when they are correct, but initialize from real data when zero would lie.\n4. Return the final state.\n\nCore move: Return the sum of a slice of integers.",
+      "pitfalls": [
+        "Confusing the concept with unnecessary machinery.",
+        "Forgetting empty input behavior.",
+        "Returning nondeterministic output when sorted/stable output is expected."
+      ],
+      "hints": [
+        "Name the invariant before naming variables.",
+        "Prefer one clear owner for mutable state.",
+        "Make output deterministic if maps are involved."
+      ],
+      "explanation": "This problem is a small version of a real Go design decision. The solution works because it keeps the important state obvious and avoids pretending the problem is bigger than it is.\n\nRead the reference solution as a story: initialize the state, update it once per input item, return it. That pattern appears everywhere in Go: CLIs, servers, tests, parsers, and concurrent workers.\n\nIf you can explain why each variable exists, you understood the concept. If a variable feels decorative, remove it.",
+      "starterCode": "func Solve(nums []int) int {\n    return 0\n}",
+      "solutionCode": "func Solve(nums []int) int { s:=0; for _,x:=range nums {s+=x}; return s }",
+      "testCode": "func main(){ assertEqual(Solve([]int{1,2,3}),6); assertEqual(Solve([]int{}),0); assertEqual(Solve([]int{-1,1}),0) }",
+      "examples": [
+        {
+          "input": "[1,2,3]",
+          "output": "6"
+        }
+      ]
+    },
+    {
+      "id": "normalize-spaces",
+      "number": 23,
+      "title": "Normalize Spaces",
+      "chapter": "ch11",
+      "difficulty": "Medium",
+      "tags": [
+        "testing",
+        "strings"
+      ],
+      "statement": "Trim whitespace and collapse internal whitespace to single spaces.",
+      "lessonTitle": "Why this matters: Normalize Spaces",
+      "lesson": "This exercise belongs to Testing.\n\nThe big idea: Table tests, benchmarks, examples, coverage thinking, and testable design.\n\nThink of this as a lab exercise, not a trivia question. The point is to build an instinct: what kind of state does this situation need, and who owns that state?\n\nBefore coding, draw a tiny box for the current value you care about. If the value changes over time, ask what protects it. If the value is just being transformed, ask what the clean return shape should be.\n\nYour goal is not to memorize a trick. Your goal is to make the invisible rule visible in code.",
+      "approach": "Attack plan:\n\n1. Translate the requirement into one invariant: what should be true after each loop step?\n2. Pick the smallest state that preserves that invariant.\n3. Let Go zero values help when they are correct, but initialize from real data when zero would lie.\n4. Return the final state.\n\nCore move: Trim whitespace and collapse internal whitespace to single spaces.",
+      "pitfalls": [
+        "Confusing the concept with unnecessary machinery.",
+        "Forgetting empty input behavior.",
+        "Returning nondeterministic output when sorted/stable output is expected."
+      ],
+      "hints": [
+        "Name the invariant before naming variables.",
+        "Prefer one clear owner for mutable state.",
+        "Make output deterministic if maps are involved."
+      ],
+      "explanation": "This problem is a small version of a real Go design decision. The solution works because it keeps the important state obvious and avoids pretending the problem is bigger than it is.\n\nRead the reference solution as a story: initialize the state, update it once per input item, return it. That pattern appears everywhere in Go: CLIs, servers, tests, parsers, and concurrent workers.\n\nIf you can explain why each variable exists, you understood the concept. If a variable feels decorative, remove it.",
+      "starterCode": "func Solve(s string) string {\n    return \"\"\n}",
+      "solutionCode": "import \"strings\"\nfunc Solve(s string) string { return strings.Join(strings.Fields(s),\" \") }",
+      "testCode": "func main(){ assertEqual(Solve(\"  go   is fun \"),\"go is fun\"); assertEqual(Solve(\"\"),\"\") }",
+      "examples": [
+        {
+          "input": "\"  go   is fun \"",
+          "output": "\"go is fun\""
+        }
+      ]
+    },
+    {
+      "id": "reflect-kind",
+      "number": 24,
+      "title": "Kind Name",
+      "chapter": "ch12",
+      "difficulty": "Easy",
+      "tags": [
+        "reflection",
+        "types"
+      ],
+      "statement": "Return the reflect kind name for a dynamic value, or invalid for nil.",
+      "lessonTitle": "Why this matters: Kind Name",
+      "lesson": "This exercise belongs to Reflection.\n\nThe big idea: Inspecting dynamic values, tags, generic encoders, and reflect pitfalls.\n\nThink of this as a lab exercise, not a trivia question. The point is to build an instinct: what kind of state does this situation need, and who owns that state?\n\nBefore coding, draw a tiny box for the current value you care about. If the value changes over time, ask what protects it. If the value is just being transformed, ask what the clean return shape should be.\n\nYour goal is not to memorize a trick. Your goal is to make the invisible rule visible in code.",
+      "approach": "Attack plan:\n\n1. Translate the requirement into one invariant: what should be true after each loop step?\n2. Pick the smallest state that preserves that invariant.\n3. Let Go zero values help when they are correct, but initialize from real data when zero would lie.\n4. Return the final state.\n\nCore move: Return the reflect kind name for a dynamic value, or invalid for nil.",
+      "pitfalls": [
+        "Confusing the concept with unnecessary machinery.",
+        "Forgetting empty input behavior.",
+        "Returning nondeterministic output when sorted/stable output is expected."
+      ],
+      "hints": [
+        "Name the invariant before naming variables.",
+        "Prefer one clear owner for mutable state.",
+        "Make output deterministic if maps are involved."
+      ],
+      "explanation": "This problem is a small version of a real Go design decision. The solution works because it keeps the important state obvious and avoids pretending the problem is bigger than it is.\n\nRead the reference solution as a story: initialize the state, update it once per input item, return it. That pattern appears everywhere in Go: CLIs, servers, tests, parsers, and concurrent workers.\n\nIf you can explain why each variable exists, you understood the concept. If a variable feels decorative, remove it.",
+      "starterCode": "func Solve(v any) string {\n    return \"\"\n}",
+      "solutionCode": "import \"reflect\"\nfunc Solve(v any) string { if v==nil {return \"invalid\"}; return reflect.TypeOf(v).Kind().String() }",
+      "testCode": "func main(){ assertEqual(Solve(3),\"int\"); assertEqual(Solve(\"x\"),\"string\"); assertEqual(Solve([]int{}),\"slice\"); assertEqual(Solve(nil),\"invalid\") }",
+      "examples": [
+        {
+          "input": "3",
+          "output": "\"int\""
+        }
+      ]
+    },
+    {
+      "id": "struct-tags",
+      "number": 25,
+      "title": "Struct Tag Lookup",
+      "chapter": "ch12",
+      "difficulty": "Medium",
+      "tags": [
+        "reflection",
+        "struct-tags"
+      ],
+      "statement": "Return the json tag for a named struct field, or empty string.",
+      "lessonTitle": "Why this matters: Struct Tag Lookup",
+      "lesson": "This exercise belongs to Reflection.\n\nThe big idea: Inspecting dynamic values, tags, generic encoders, and reflect pitfalls.\n\nThink of this as a lab exercise, not a trivia question. The point is to build an instinct: what kind of state does this situation need, and who owns that state?\n\nBefore coding, draw a tiny box for the current value you care about. If the value changes over time, ask what protects it. If the value is just being transformed, ask what the clean return shape should be.\n\nYour goal is not to memorize a trick. Your goal is to make the invisible rule visible in code.",
+      "approach": "Attack plan:\n\n1. Translate the requirement into one invariant: what should be true after each loop step?\n2. Pick the smallest state that preserves that invariant.\n3. Let Go zero values help when they are correct, but initialize from real data when zero would lie.\n4. Return the final state.\n\nCore move: Return the json tag for a named struct field, or empty string.",
+      "pitfalls": [
+        "Confusing the concept with unnecessary machinery.",
+        "Forgetting empty input behavior.",
+        "Returning nondeterministic output when sorted/stable output is expected."
+      ],
+      "hints": [
+        "Name the invariant before naming variables.",
+        "Prefer one clear owner for mutable state.",
+        "Make output deterministic if maps are involved."
+      ],
+      "explanation": "This problem is a small version of a real Go design decision. The solution works because it keeps the important state obvious and avoids pretending the problem is bigger than it is.\n\nRead the reference solution as a story: initialize the state, update it once per input item, return it. That pattern appears everywhere in Go: CLIs, servers, tests, parsers, and concurrent workers.\n\nIf you can explain why each variable exists, you understood the concept. If a variable feels decorative, remove it.",
+      "starterCode": "func Solve(v any, field string) string {\n    return \"\"\n}",
+      "solutionCode": "import \"reflect\"\nfunc Solve(v any, field string) string { t:=reflect.TypeOf(v); if t==nil {return \"\"}; if t.Kind()==reflect.Pointer {t=t.Elem()}; if t.Kind()!=reflect.Struct {return \"\"}; f,ok:=t.FieldByName(field); if !ok {return \"\"}; return f.Tag.Get(\"json\") }",
+      "testCode": "type User struct{Name string `json:\"name\"`; Age int `json:\"age\"`}\nfunc main(){ assertEqual(Solve(User{},\"Name\"),\"name\"); assertEqual(Solve(&User{},\"Age\"),\"age\"); assertEqual(Solve(3,\"Name\"),\"\") }",
+      "examples": [
+        {
+          "input": "User{}, \"Name\"",
+          "output": "\"name\""
+        }
+      ]
+    },
+    {
+      "id": "byte-view",
+      "number": 26,
+      "title": "Byte View",
+      "chapter": "ch13",
+      "difficulty": "Easy",
+      "tags": [
+        "bytes",
+        "memory"
+      ],
+      "statement": "Return the byte values of an ASCII string.",
+      "lessonTitle": "Why this matters: Byte View",
+      "lesson": "This exercise belongs to Low-Level Programming.\n\nThe big idea: Unsafe, memory layout, alignment, byte views, and when not to be clever.\n\nThink of this as a lab exercise, not a trivia question. The point is to build an instinct: what kind of state does this situation need, and who owns that state?\n\nBefore coding, draw a tiny box for the current value you care about. If the value changes over time, ask what protects it. If the value is just being transformed, ask what the clean return shape should be.\n\nYour goal is not to memorize a trick. Your goal is to make the invisible rule visible in code.",
+      "approach": "Attack plan:\n\n1. Translate the requirement into one invariant: what should be true after each loop step?\n2. Pick the smallest state that preserves that invariant.\n3. Let Go zero values help when they are correct, but initialize from real data when zero would lie.\n4. Return the final state.\n\nCore move: Return the byte values of an ASCII string.",
+      "pitfalls": [
+        "Confusing the concept with unnecessary machinery.",
+        "Forgetting empty input behavior.",
+        "Returning nondeterministic output when sorted/stable output is expected."
+      ],
+      "hints": [
+        "Name the invariant before naming variables.",
+        "Prefer one clear owner for mutable state.",
+        "Make output deterministic if maps are involved."
+      ],
+      "explanation": "This problem is a small version of a real Go design decision. The solution works because it keeps the important state obvious and avoids pretending the problem is bigger than it is.\n\nRead the reference solution as a story: initialize the state, update it once per input item, return it. That pattern appears everywhere in Go: CLIs, servers, tests, parsers, and concurrent workers.\n\nIf you can explain why each variable exists, you understood the concept. If a variable feels decorative, remove it.",
+      "starterCode": "func Solve(s string) []byte {\n    return nil\n}",
+      "solutionCode": "func Solve(s string) []byte { return []byte(s) }",
+      "testCode": "func main(){ assertEqual(Solve(\"Go\"),[]byte{71,111}); assertEqual(Solve(\"\"),[]byte{}) }",
+      "examples": [
+        {
+          "input": "\"Go\"",
+          "output": "[71,111]"
+        }
+      ]
+    },
+    {
+      "id": "align-pairs",
+      "number": 27,
+      "title": "Pair Packing",
+      "chapter": "ch13",
+      "difficulty": "Medium",
+      "tags": [
+        "layout",
+        "alignment"
+      ],
+      "statement": "Given field sizes, add padding so total is aligned to 2 after each field.",
+      "lessonTitle": "Why this matters: Pair Packing",
+      "lesson": "This exercise belongs to Low-Level Programming.\n\nThe big idea: Unsafe, memory layout, alignment, byte views, and when not to be clever.\n\nThink of this as a lab exercise, not a trivia question. The point is to build an instinct: what kind of state does this situation need, and who owns that state?\n\nBefore coding, draw a tiny box for the current value you care about. If the value changes over time, ask what protects it. If the value is just being transformed, ask what the clean return shape should be.\n\nYour goal is not to memorize a trick. Your goal is to make the invisible rule visible in code.",
+      "approach": "Attack plan:\n\n1. Translate the requirement into one invariant: what should be true after each loop step?\n2. Pick the smallest state that preserves that invariant.\n3. Let Go zero values help when they are correct, but initialize from real data when zero would lie.\n4. Return the final state.\n\nCore move: Given field sizes, add padding so total is aligned to 2 after each field.",
+      "pitfalls": [
+        "Confusing the concept with unnecessary machinery.",
+        "Forgetting empty input behavior.",
+        "Returning nondeterministic output when sorted/stable output is expected."
+      ],
+      "hints": [
+        "Name the invariant before naming variables.",
+        "Prefer one clear owner for mutable state.",
+        "Make output deterministic if maps are involved."
+      ],
+      "explanation": "This problem is a small version of a real Go design decision. The solution works because it keeps the important state obvious and avoids pretending the problem is bigger than it is.\n\nRead the reference solution as a story: initialize the state, update it once per input item, return it. That pattern appears everywhere in Go: CLIs, servers, tests, parsers, and concurrent workers.\n\nIf you can explain why each variable exists, you understood the concept. If a variable feels decorative, remove it.",
+      "starterCode": "func Solve(sizes []int) int {\n    return 0\n}",
+      "solutionCode": "func Solve(sizes []int) int { total:=0; for _,x:=range sizes { total+=x; if total%2!=0 {total++} }; return total }",
+      "testCode": "func main(){ assertEqual(Solve([]int{1,1,2}),6); assertEqual(Solve([]int{2,2}),4); assertEqual(Solve([]int{}),0) }",
+      "examples": [
+        {
+          "input": "[1,1,2]",
+          "output": "6"
+        }
       ]
     }
   ]
