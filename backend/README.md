@@ -19,5 +19,8 @@ GOPRAC_MAX_BODY_BYTES=131072
 GOPRAC_MAX_CODE_BYTES=65536
 GOPRAC_MAX_CONCURRENT_RUNS=2
 GOPRAC_RUN_TIMEOUT=3s
+GOPRAC_SANDBOX_PULL_TIMEOUT=2m
 GOPRAC_OUTPUT_LIMIT_BYTES=65536
 ```
+
+The image pull timeout is separate from `GOPRAC_RUN_TIMEOUT`; first-time pulls do not consume the user-code execution budget.

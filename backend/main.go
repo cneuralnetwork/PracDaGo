@@ -69,6 +69,7 @@ type Config struct {
 	MaxCodeBytes      int
 	MaxConcurrentRuns int
 	RunTimeout        time.Duration
+	ImagePullTimeout  time.Duration
 	OutputLimit       int
 	SandboxRuntime    string
 	SandboxImage      string
@@ -116,6 +117,7 @@ func loadConfig() Config {
 		MaxCodeBytes:      envInt("GOPRAC_MAX_CODE_BYTES", 64*1024),
 		MaxConcurrentRuns: envInt("GOPRAC_MAX_CONCURRENT_RUNS", 2),
 		RunTimeout:        envDuration("GOPRAC_RUN_TIMEOUT", 3*time.Second),
+		ImagePullTimeout:  envDuration("GOPRAC_SANDBOX_PULL_TIMEOUT", 2*time.Minute),
 		OutputLimit:       envInt("GOPRAC_OUTPUT_LIMIT_BYTES", 64*1024),
 		SandboxRuntime:    os.Getenv("GOPRAC_SANDBOX_BIN"),
 		SandboxImage:      env("GOPRAC_SANDBOX_IMAGE", "golang:1.24-alpine"),
@@ -319,6 +321,9 @@ func runInSandbox(dir string, files []string, mode string) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	if err := ensureSandboxImage(runtime); err != nil {
+		return "", err
+	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), config.RunTimeout)
 	defer cancel()
@@ -384,11 +389,44 @@ func sandboxRuntime() (string, error) {
 		return path, nil
 	}
 	for _, bin := range []string{"docker", "podman"} {
-		if path, err := exec.LookPath(bin); err == nil {
+		if path, err := exec.LookPath(bin); err == nil && runtimeUsable(path) {
 			return path, nil
 		}
 	}
 	return "", fmt.Errorf("sandbox runtime unavailable: install Docker or Podman, or set GOPRAC_SANDBOX_BIN")
+}
+func runtimeUsable(runtime string) bool {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	return exec.CommandContext(ctx, runtime, "info").Run() == nil
+}
+func ensureSandboxImage(runtime string) error {
+	if imageAvailable(runtime) {
+		return nil
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), config.ImagePullTimeout)
+	defer cancel()
+	cmd := exec.CommandContext(ctx, runtime, "pull", config.SandboxImage)
+	var buf cappedBuffer
+	buf.limit = config.OutputLimit
+	cmd.Stdout = &buf
+	cmd.Stderr = &buf
+	if err := cmd.Run(); err != nil {
+		if errors.Is(ctx.Err(), context.DeadlineExceeded) {
+			return fmt.Errorf("sandbox image pull timed out")
+		}
+		message := strings.TrimSpace(buf.String())
+		if message == "" {
+			message = err.Error()
+		}
+		return fmt.Errorf("sandbox image pull failed: %s", message)
+	}
+	return nil
+}
+func imageAvailable(runtime string) bool {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	return exec.CommandContext(ctx, runtime, "image", "inspect", config.SandboxImage).Run() == nil
 }
 
 type cappedBuffer struct {

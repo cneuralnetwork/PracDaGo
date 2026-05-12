@@ -3,6 +3,9 @@ package main
 import (
 	"net/http"
 	"net/http/httptest"
+	"os"
+	"path/filepath"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -70,4 +73,83 @@ func TestRunCodeLimitsConcurrentRuns(t *testing.T) {
 	if rr.Code != http.StatusTooManyRequests {
 		t.Fatalf("status = %d, want %d", rr.Code, http.StatusTooManyRequests)
 	}
+}
+
+func TestSandboxRuntimeFallsBackWhenDockerUnusable(t *testing.T) {
+	binDir := t.TempDir()
+	writeFakeRuntime(t, binDir, "docker", "info", 1, 0)
+	writeFakeRuntime(t, binDir, "podman", "info", 0, 0)
+	t.Setenv("PATH", binDir)
+	config = Config{}
+
+	runtime, err := sandboxRuntime()
+	if err != nil {
+		t.Fatalf("sandboxRuntime returned error: %v", err)
+	}
+	if filepath.Base(runtime) != "podman" {
+		t.Fatalf("runtime = %q, want podman", runtime)
+	}
+}
+
+func TestImagePullDoesNotConsumeRunTimeout(t *testing.T) {
+	binDir := t.TempDir()
+	logPath := filepath.Join(t.TempDir(), "runtime.log")
+	writeFakeRuntime(t, binDir, "docker", "", 0, 40*time.Millisecond, logPath)
+	t.Setenv("PATH", binDir)
+	config = Config{
+		RunTimeout:       time.Millisecond,
+		ImagePullTimeout: time.Second,
+		SandboxImage:     "example.test/goprac:latest",
+		OutputLimit:      1024,
+	}
+
+	dir := t.TempDir()
+	file := filepath.Join(dir, "main.go")
+	if err := os.WriteFile(file, []byte("package main\nfunc main(){}\n"), 0644); err != nil {
+		t.Fatal(err)
+	}
+
+	out, err := runInSandbox(dir, []string{file}, "run")
+	if err != nil {
+		t.Fatalf("runInSandbox returned error: %v", err)
+	}
+	if !strings.Contains(out, "Compiled and ran successfully") {
+		t.Fatalf("output = %q", out)
+	}
+	logData, err := os.ReadFile(logPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	log := string(logData)
+	if !strings.Contains(log, "image inspect example.test/goprac:latest") || !strings.Contains(log, "pull example.test/goprac:latest") || !strings.Contains(log, "run --rm") {
+		t.Fatalf("runtime log missing expected commands: %s", log)
+	}
+}
+
+func writeFakeRuntime(t *testing.T, dir, name, failingCommand string, failingExit int, sleep time.Duration, extraLog ...string) {
+	t.Helper()
+	logPath := ""
+	if len(extraLog) > 0 {
+		logPath = extraLog[0]
+	}
+	script := "#!/bin/sh\n"
+	if logPath != "" {
+		script += "echo \"$@\" >> " + shellQuote(logPath) + "\n"
+	}
+	if sleep > 0 {
+		script += "if [ \"$1\" = \"pull\" ]; then sleep " + strconv.FormatFloat(sleep.Seconds(), 'f', 3, 64) + "; fi\n"
+	}
+	if failingCommand != "" {
+		script += "if [ \"$1\" = " + shellQuote(failingCommand) + " ]; then exit " + strconv.Itoa(failingExit) + "; fi\n"
+	}
+	script += "if [ \"$1\" = \"image\" ] && [ \"$2\" = \"inspect\" ]; then exit 1; fi\n"
+	script += "exit 0\n"
+	path := filepath.Join(dir, name)
+	if err := os.WriteFile(path, []byte(script), 0755); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func shellQuote(value string) string {
+	return "'" + strings.ReplaceAll(value, "'", "'\\''") + "'"
 }
