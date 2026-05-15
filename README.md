@@ -18,7 +18,7 @@ The current content is inspired by the topic flow of The Go Programming Language
 - React + Vite + TypeScript frontend
 - Monaco editor for Go code
 - Go backend API
-- Local Go code runner
+- Container-sandboxed Go code runner
 - Per-problem judge tests on submit
 - Run mode for compiling/executing code
 - 3 second execution timeout
@@ -83,6 +83,7 @@ You need:
 - Node.js
 - npm
 - Go
+- Docker or Podman for running submitted Go code in a sandbox
 
 ### 1. Start the backend
 
@@ -97,6 +98,21 @@ The backend runs on:
 
 ```txt
 http://localhost:8080
+```
+
+By default, the backend binds to `127.0.0.1`, only allows browser requests from `http://localhost:5173` and `http://127.0.0.1:5173`, and runs submitted code inside Docker or Podman with no network, a read-only filesystem, and CPU, memory, process, timeout, body-size, concurrency, and output limits.
+
+Useful backend environment variables:
+
+```txt
+GOPRAC_BIND_ADDR=127.0.0.1
+GOPRAC_ALLOWED_ORIGINS=http://localhost:5173,http://127.0.0.1:5173
+GOPRAC_SANDBOX_BIN=docker
+GOPRAC_SANDBOX_IMAGE=golang:1.24-alpine
+GOPRAC_MAX_BODY_BYTES=131072
+GOPRAC_MAX_CODE_BYTES=65536
+GOPRAC_MAX_CONCURRENT_RUNS=2
+GOPRAC_RUN_TIMEOUT=3s
 ```
 
 ### 2. Start the frontend
@@ -156,7 +172,7 @@ The right side contains:
 
 ### Run
 
-Run compiles and executes your code locally.
+Run compiles and executes your code in a local container sandbox.
 
 If your code has a `main` function, that function runs. If not, the backend adds an empty `main` so the code can still compile.
 
@@ -164,7 +180,7 @@ Use Run when you want to print debug output or quickly check syntax.
 
 ### Submit
 
-Submit injects the problem's local judge tests and runs your `Solve` function against them.
+Submit injects the problem's local judge tests and runs your `Solve` function against them in the same local container sandbox.
 
 If all tests pass, the verdict is `Accepted` and the problem is marked solved in your browser.
 
