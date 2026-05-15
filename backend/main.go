@@ -37,7 +37,11 @@ type Problem struct {
 	Difficulty   string    `json:"difficulty"`
 	Tags         []string  `json:"tags"`
 	Statement    string    `json:"statement"`
+	ProblemText  string    `json:"problemText"`
 	Explanation  string    `json:"explanation"`
+	HowItWorks   string    `json:"howItWorks"`
+	Syntax       string    `json:"syntax"`
+	Solve        string    `json:"solve"`
 	LessonTitle  string    `json:"lessonTitle"`
 	Lesson       string    `json:"lesson"`
 	Approach     string    `json:"approach"`
