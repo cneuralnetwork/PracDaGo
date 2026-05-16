@@ -1,5 +1,5 @@
 import Editor from '@monaco-editor/react';
-import {CheckCircle2,FileText,Play,Send,Upload} from 'lucide-react';
+import {CheckCircle2,FileText,Play,RotateCcw,Send,Upload} from 'lucide-react';
 import type {OutputComparison,RunMode,Theme,UploadedFile} from '../types';
 import OutputPanel from './OutputPanel';
 
@@ -16,13 +16,14 @@ type Props={
   output:string;
   comparison:OutputComparison|null;
   onSaveDraft:(value:string|undefined)=>void;
+  onResetDraft:()=>void;
   onAddFiles:(files:FileList|null)=>void;
   onClearFiles:()=>void;
   onRun:(mode:RunMode)=>void;
   onMarkComplete:()=>void;
 }
 
-function WorkPanel({needsFiles,canSubmitProblem,code,theme,runningMode,uploaded,proofReady,solved,verdict,output,comparison,onSaveDraft,onAddFiles,onClearFiles,onRun,onMarkComplete}:Props){
+function WorkPanel({needsFiles,canSubmitProblem,code,theme,runningMode,uploaded,proofReady,solved,verdict,output,comparison,onSaveDraft,onResetDraft,onAddFiles,onClearFiles,onRun,onMarkComplete}:Props){
   const editorTheme=theme==='dark'?'vs-dark':'vs';
   const emptyMessage=needsFiles
     ? 'Upload files to preview them here. Use Run for optional Go drafts.'
@@ -35,6 +36,7 @@ function WorkPanel({needsFiles,canSubmitProblem,code,theme,runningMode,uploaded,
       <div><b>{needsFiles?'File workspace':'Go editor'}</b><span>{needsFiles?'Upload sample input files for this exercise':canSubmitProblem?'Drafts save locally':'Manual project completion'}</span></div>
       <div className="run-actions">
         {needsFiles&&<label className={`btn2 ${runningMode?'disabled':''} cursor-pointer`}><Upload size={15}/> Upload<input type="file" multiple className="hidden" disabled={!!runningMode} onChange={e=>onAddFiles(e.target.files)}/></label>}
+        <button type="button" className="btn2" disabled={!!runningMode} onClick={onResetDraft}><RotateCcw size={15}/> Reset</button>
         <button type="button" className="btn2" disabled={!!runningMode} onClick={()=>onRun('run')}><Play size={15}/> {runningMode==='run'?'Running...':'Run'}</button>
         {canSubmitProblem
           ? <button type="button" className="btn" disabled={!!runningMode} onClick={()=>onRun('submit')}><Send size={15}/> {runningMode==='submit'?'Submitting...':'Submit'}</button>

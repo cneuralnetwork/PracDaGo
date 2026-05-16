@@ -82,6 +82,16 @@ function App(){
     if(problem) writeTextStorage(getBrowserStorage(),'draft:'+problem.id,nextCode);
   }
 
+  function resetDraft(){
+    if(!problem||runningMode) return;
+    if(!window.confirm('Reset editor to the starter code? Your current draft will be lost.')) return;
+    setCode(problem.starterCode);
+    removeStorageItem(getBrowserStorage(),'draft:'+problem.id);
+    setOut('');
+    setComparison(null);
+    setVerdict('');
+  }
+
   async function addFiles(list:FileList|null){
     if(!problem||!list||runningMode) return;
     const files=await Promise.all(Array.from(list).map(async file=>({name:file.name,text:await file.text()})));
@@ -179,6 +189,7 @@ function App(){
           output={out}
           comparison={comparison}
           onSaveDraft={saveDraft}
+          onResetDraft={resetDraft}
           onAddFiles={addFiles}
           onClearFiles={clearFiles}
           onRun={run}
