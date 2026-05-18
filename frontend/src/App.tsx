@@ -1,4 +1,5 @@
-import {useEffect,useMemo,useState} from 'react';
+import {useEffect,useMemo,useRef,useState} from 'react';
+import {GripVertical} from 'lucide-react';
 import {errorMessage,fetchJson,getBrowserStorage,readJsonStorage,readTextStorage,removeStorageItem,writeJsonStorage,writeTextStorage} from './appState';
 import LearningPanel from './components/LearningPanel';
 import ProblemNav from './components/ProblemNav';
@@ -33,6 +34,9 @@ function App(){
   const [loadError,setLoadError]=useState('');
   const [runningMode,setRunningMode]=useState<RunMode|''>('');
   const [theme,setTheme]=useState<Theme>(()=>readTextStorage(getBrowserStorage(),'theme','dark')==='light'?'light':'dark');
+  const [splitRatio,setSplitRatio]=useState(0.47);
+  const [isDragging,setIsDragging]=useState(false);
+  const workspaceMainRef=useRef<HTMLDivElement>(null);
 
   useEffect(()=>{
     fetchJson<Store>(API+'/api/problems',undefined,'Problem list')
@@ -122,6 +126,31 @@ function App(){
     setTheme(current=>current==='dark'?'light':'dark');
   }
 
+  function startDrag(e:React.MouseEvent){
+    e.preventDefault();
+    const container=workspaceMainRef.current;
+    if(!container) return;
+    setIsDragging(true);
+    function onMove(ev:MouseEvent){
+      const rect=container.getBoundingClientRect();
+      const ratio=(ev.clientX-rect.left)/rect.width;
+      setSplitRatio(Math.min(Math.max(ratio,0.2),0.75));
+    }
+    function onUp(){
+      setIsDragging(false);
+      document.removeEventListener('mousemove',onMove);
+      document.removeEventListener('mouseup',onUp);
+    }
+    document.addEventListener('mousemove',onMove);
+    document.addEventListener('mouseup',onUp);
+  }
+
+  useEffect(()=>{
+    document.body.style.cursor=isDragging?'col-resize':'';
+    document.body.style.userSelect=isDragging?'none':'';
+    return ()=>{ document.body.style.cursor=''; document.body.style.userSelect=''; };
+  },[isDragging]);
+
   function showProjectChecklist(){
     if(!problem) return;
     setProofReady(true);
@@ -174,27 +203,34 @@ function App(){
     <Topbar theme={theme} judgeCount={judgeCount} solvedCount={solved.length} totalCount={store.problems.length} progress={progress} onToggleTheme={toggleTheme}/>
     <div className="workspace-layout">
       <ProblemNav store={store} filtered={filtered} pid={pid} query={query} chapter={chapter} mode={mode} judgeCount={judgeCount} solved={solved} onQuery={setQuery} onChapter={setChapter} onMode={setMode} onSelect={select} onSelectById={selectById}/>
-      <main className="workspace-main">{problem?<>
-        <LearningPanel problem={problem} tab={tab} onTab={setTab}/>
-        <WorkPanel
-          needsFiles={needsFiles}
-          canSubmitProblem={canSubmitProblem}
-          code={code}
-          theme={theme}
-          runningMode={runningMode}
-          uploaded={uploaded}
-          proofReady={proofReady}
-          solved={solved.includes(problem.id)}
-          verdict={verdict}
-          output={out}
-          comparison={comparison}
-          onSaveDraft={saveDraft}
-          onResetDraft={resetDraft}
-          onAddFiles={addFiles}
-          onClearFiles={clearFiles}
-          onRun={run}
-          onMarkComplete={markComplete}
-        />
+      <main className={`workspace-main${isDragging?' is-dragging':''}`} ref={workspaceMainRef}>{problem?<>
+        <div className="panel-pane" style={{flexBasis:`${splitRatio*100}%`}}>
+          <LearningPanel problem={problem} tab={tab} onTab={setTab}/>
+        </div>
+        <div className="panel-divider" onMouseDown={startDrag} title="Drag to resize">
+          <GripVertical size={16}/>
+        </div>
+        <div className="panel-pane" style={{flex:'1 1 0'}}>
+          <WorkPanel
+            needsFiles={needsFiles}
+            canSubmitProblem={canSubmitProblem}
+            code={code}
+            theme={theme}
+            runningMode={runningMode}
+            uploaded={uploaded}
+            proofReady={proofReady}
+            solved={solved.includes(problem.id)}
+            verdict={verdict}
+            output={out}
+            comparison={comparison}
+            onSaveDraft={saveDraft}
+            onResetDraft={resetDraft}
+            onAddFiles={addFiles}
+            onClearFiles={clearFiles}
+            onRun={run}
+            onMarkComplete={markComplete}
+          />
+        </div>
       </>:<section className="learning-panel"><div className="content-scroll markdown-body scrollbar"><h3>{loadError?'Unable to load exercises':'Loading exercises'}</h3><p>{loadError||'Fetching the problem catalog from the backend.'}</p></div></section>}</main>
     </div>
   </div>;
